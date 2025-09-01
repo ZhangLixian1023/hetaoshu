@@ -1,0 +1,12 @@
+Django>=4.2,<5.0
+djangorestframework
+mysqlclient
+django-cors-headers
+dotenv
+gunicorn
+django-filter
+Pillow==10.4.0
+coverage
+pytest
+pytest-django
+mysql-connector-python
