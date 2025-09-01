@@ -1,0 +1,76 @@
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependencies
+*.egg-info/
+
+# Testing
+.coverage
+.pytest_cache
+htmlcov/
+
+# Production
+build/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.example
+
+# Python/Django
+*.py[cod]
+__pycache__/
+*$py.class
+
+# Static and media files
+/staticfiles/
+/media/
+
+# Database
+*.sqlite3
+*.db
+
+# Migrations (except for the __init__.py files)
+**/migrations/**
+!**/migrations/__init__.py
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+.virtualenv/
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Temporary files
+*.tmp
+*.temp
+.cache

@@ -9,7 +9,8 @@ user = User.objects.get(student_id='admin')
 post = Post.objects.create(
     title='测试帖子',
     content='这是一个测试帖子内容',
-    created_by=user,
+    author=user,
+    post_type='share',
     created_at=datetime.datetime.now()
 )
 
