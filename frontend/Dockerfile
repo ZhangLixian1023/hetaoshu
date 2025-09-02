@@ -1,13 +1,19 @@
-# 构建阶段
-FROM node:16-alpine as build
+# 开发环境Dockerfile
+FROM node:16-alpine
 WORKDIR /app
+
+# 添加包管理工具
+RUN npm install -g npm@latest
+
+# 安装依赖
 COPY package.json ./
 RUN npm install
-COPY . .
-RUN npm run build
 
-# 生产阶段
-FROM nginx:1.21-alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# 复制项目文件
+COPY . .
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动开发服务器
+CMD ["npm", "start"]

@@ -32,7 +32,17 @@ services:
       - 8000
 
   frontend:
-    build: ./frontend
+    image: node:16-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm start"
     depends_on:
       - backend
 
