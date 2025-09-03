@@ -3,7 +3,12 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 import uuid
 import random
 import string
-from datetime import datetime, timedelta
+from datetime import timedelta
+from django.utils import timezone
+
+# 生成验证码过期时间的函数 - 这个函数将在数据库层面提供默认值
+def get_default_expires_at():
+    return timezone.now() + timedelta(minutes=10)
 
 class UserManager(BaseUserManager):
     def create_user(self, student_id, email, password=None, **extra_fields):
@@ -52,19 +57,17 @@ class VerificationCode(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='verification_codes')
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField()
+    expires_at = models.DateTimeField(default=get_default_expires_at)
     is_used = models.BooleanField(default=False)
     
     def save(self, *args, **kwargs):
-        if not self.pk:  # 新建记录时生成验证码和过期时间
+        if self._state.adding:   # 新建记录时生成验证码
             # 生成6位数字验证码
             self.code = ''.join(random.choices(string.digits, k=6))
-            # 设置10分钟后过期
-            self.expires_at = datetime.now() + timedelta(minutes=10)
         super().save(*args, **kwargs)
     
     def is_valid(self):
-        return not self.is_used and datetime.now() < self.expires_at
+        return not self.is_used and timezone.now() < self.expires_at
     
     class Meta:
         verbose_name = '验证码'

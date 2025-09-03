@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect,useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import CommentList from '../components/comments/CommentList';
 import CommentForm from '../components/comments/CommentForm';
+import ImageCarousel from '../components/posts/ImageCarousel';
 
 const PostDetailPage = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const PostDetailPage = () => {
   }, []);
   
   // 获取帖子详情
-  const fetchPost = async () => {
+  const fetchPost =useCallback( async () => {
     try {
       setLoading(true);
       const response = await axios.get(`/posts/${id}/`);
@@ -33,12 +34,12 @@ const PostDetailPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[id]);
   
   useEffect(() => {
     fetchPost();
-  }, [id]);
-  
+  }, [id,fetchPost]);
+
   // 处理删除帖子
   const handleDeletePost = async () => {
     if (!window.confirm('确定要删除这个帖子吗？')) {
@@ -52,38 +53,6 @@ const PostDetailPage = () => {
     } catch (error) {
       console.error('Error deleting post:', error);
       toast.error('删除帖子失败');
-    }
-  };
-  
-  // 处理评论提交
-  const handleCommentSubmit = async (content) => {
-    if (!user) {
-      toast.info('请先登录');
-      return;
-    }
-    
-    try {
-      await axios.post('/comments/', {
-        post: id,
-        content: content
-      });
-      toast.success('评论成功');
-      fetchPost(); // 重新加载帖子以显示新评论
-    } catch (error) {
-      console.error('Error submitting comment:', error);
-      toast.error('评论失败');
-    }
-  };
-  
-  // 处理删除评论
-  const handleDeleteComment = async (commentId) => {
-    try {
-      await axios.delete(`/comments/${commentId}/`);
-      toast.success('评论已删除');
-      fetchPost(); // 重新加载帖子
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-      toast.error('删除评论失败');
     }
   };
   
@@ -112,7 +81,7 @@ const PostDetailPage = () => {
   return (
     <div className="max-w-4xl mx-auto">
       {/* 帖子标题栏 */}
-      <div className={`rounded-t-lg p-4 ${headerBgColor} border-b ${borderColor}`}>
+      <div className={`rounded-t-lg p-5 ${headerBgColor} border ${borderColor}`}>
         <div className="flex justify-between items-center">
           <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${typeColor} bg-opacity-20`}>
             {typeText}
@@ -149,19 +118,11 @@ const PostDetailPage = () => {
       </div>
       
       {/* 帖子内容 */}
-      <div className={`p-6 bg-white border-l border-r ${borderColor}`}>
-        {/* 帖子图片 */}
+      <div className={`p-6 bg-white border ${borderColor}`}>
+        {/* 帖子图片 - 使用轮播组件 */}
         {post.images && post.images.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {post.images.map(image => (
-              <div key={image.id} className="rounded-lg overflow-hidden">
-                <img 
-                  src={image.image} 
-                  alt={`${post.title}的图片`}
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            ))}
+          <div className="mb-6 rounded-lg overflow-hidden shadow-md">
+            <ImageCarousel images={post.images} alt={`${post.title}的图片`} />
           </div>
         )}
         
@@ -193,19 +154,17 @@ const PostDetailPage = () => {
       </div>
       
       {/* 评论区 */}
-      <div className={`rounded-b-lg bg-white border-t border-l border-r ${borderColor} p-6`}>
-        <h2 className="text-xl font-bold mb-6">评论 ({post.comments_count || 0})</h2>
+      <div className={`rounded-b-lg bg-white border ${borderColor} p-6`}>
+        <h2 className="text-xl font-bold mb-2">评论</h2>
         
         {/* 评论表单 */}
-        <CommentForm onSubmit={handleCommentSubmit} />
+        <CommentForm postId={id} onCommentSuccess={fetchPost} />
         
         {/* 评论列表 */}
         {post.comments && post.comments.length > 0 ? (
           <CommentList 
-            comments={post.comments} 
-            isPostAuthor={isAuthor}
-            postType={post.post_type}
-            onDeleteComment={handleDeleteComment}
+            postId={id}
+            onRefresh={fetchPost}
           />
         ) : (
           <p className="text-gray-500 mt-6">暂无评论，来发表第一条评论吧~</p>

@@ -8,7 +8,6 @@ const SetPasswordPage = () => {
   const [studentId, setStudentId] = useState('');
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -36,20 +35,10 @@ const SetPasswordPage = () => {
       toast.error('请输入验证码');
       return;
     }
-    
-    if (!password || password.length < 6) {
-      toast.error('密码长度至少为6位');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      toast.error('两次输入的密码不一致');
-      return;
-    }
 
     setLoading(true);
     try {
-      const response = await axios.post('/users/verify-code/', {
+      const response = await axios.post('/users/set-password/', {
         student_id: studentId,
         code: code,
         password: password
@@ -153,46 +142,25 @@ const SetPasswordPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-            </div>
-            
-            <div>
-              <label htmlFor="confirmPassword" className="sr-only">
-                确认密码
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i className="fa fa-lock text-gray-400"></i>
-                </div>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md"
-                  placeholder="请再次输入密码"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </div>
-            </div>
           </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              {loading ? (
-                <LoadingSpinner size="sm" />
-              ) : (
-                <span className="flex items-center">
-                  <i className="fa fa-check mr-2"></i>
-                  确认设置
-                </span>
-              )}
-            </button>
-          </div>
+        </div>
+        
+        <div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            {loading ? (
+              <LoadingSpinner size="sm" />
+            ) : (
+              <span className="flex items-center">
+                <i className="fa fa-check mr-2"></i>
+                确认设置
+              </span>
+            )}
+          </button>
+        </div>
         </form>
         <div className="text-center">
           <button

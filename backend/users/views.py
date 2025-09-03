@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.utils import timezone
+from datetime import timedelta
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -32,8 +33,8 @@ class SendVerificationCodeView(APIView):
                 password=None
             )
         
-        # 生成验证码
-        verification_code = VerificationCode.objects.create(user=user)
+        # 生成验证码，明确设置expires_at的值
+        verification_code = VerificationCode.objects.create(user=user, expires_at=timezone.now() + timedelta(minutes=10))
         
         # 发送邮件
         subject = '核桃书论坛验证码'
@@ -126,9 +127,23 @@ class LogoutView(APIView):
         request.user.auth_token.delete()
         return Response({'message': '成功登出'}, status=status.HTTP_200_OK)
 
-class UserDetailView(generics.RetrieveUpdateAPIView):
+class UserDetailView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     
     def get_object(self):
         return self.request.user
+
+
+class UpdateProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        user = request.user
+        name = request.data.get('name')
+        
+        if name is not None:
+            user.name = name
+            user.save()
+            
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)

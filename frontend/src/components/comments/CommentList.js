@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../ui/LoadingSpinner';
@@ -41,7 +41,7 @@ const CommentList = ({ postId, onRefresh }) => {
   const handleDeleteComment = async (commentId) => {
     if (window.confirm('确定要删除这条评论吗？')) {
       try {
-        await axios.delete(`/comments/${commentId}/`);
+        await axios.delete(`/posts/${postId}/comments/${commentId}/`);
         fetchComments(); // 重新获取评论列表
         toast.success('评论已删除');
       } catch (error) {
@@ -171,7 +171,7 @@ const CommentList = ({ postId, onRefresh }) => {
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-gray-900">评论 ({comments.length})</h3>
+        <h3 className="text-lg font-medium text-gray-900">共 {comments.length} 条评论</h3>
       </div>
       
       <div className="space-y-4">

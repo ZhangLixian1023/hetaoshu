@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 import 'tailwindcss/tailwind.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './styles/global.css';
 
 // 布局组件
 import Header from './components/layout/Header';
@@ -41,7 +42,11 @@ if (DEBUG) {
   console.log('API URL:', API_URL);
 }
 
+// 全局axios配置
 axios.defaults.baseURL = API_URL;
+// 设置请求大小限制为30MB (30 * 1024 * 1024)
+axios.defaults.maxContentLength = Infinity;
+axios.defaults.maxBodyLength = Infinity;
 
 // 请求拦截器添加token
 axios.interceptors.request.use(config => {
@@ -113,11 +118,11 @@ function App() {
   }
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="flex flex-col min-h-screen">
         <Header user={user} onLogout={handleLogout} />
         
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex-grow container mx-auto px-4 pt-24 pb-12">
           <Routes>
             {/* 公共路由 */}
             <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />} />
@@ -153,7 +158,7 @@ function App() {
         </main>
         
         <Footer />
-        <ToastContainer position="top-right" autoClose={3000} />
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={true} />
       </div>
     </Router>
   );

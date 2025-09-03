@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useParams, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { handleImageChange } from '../components/utils/imageUtils';
 
 const EditPostPage = () => {
   const { id } = useParams();
@@ -53,41 +54,22 @@ const EditPostPage = () => {
 
     setSubmitting(true);
     try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('content', content);
-      formData.append('post_type', postType);
-      
-      // 添加新上传的图片
-      for (let i = 0; i < images.length; i++) {
-        formData.append('images', images[i]);
-      }
-      
-      await axios.put(`/posts/${id}/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      const response = await axios.postForm(`/posts/${id}/`, {
+        title,
+        content,
+        post_type: postType,
+        images: images
       });
-      
+      console.log(response.status)
       toast.success('帖子更新成功');
-      // 跳转到帖子详情页
-      navigate(`/posts/${id}`);
+       // 跳转到帖子详情页
+       navigate(`/posts/${id}`);
     } catch (error) {
       console.error('更新帖子失败:', error);
       toast.error(error.response?.data?.error || '更新帖子失败，请稍后重试');
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const handleImageChange = (e) => {
-    const selectedImages = Array.from(e.target.files);
-    // 限制最多上传5张图片（包括已有的）
-    if (selectedImages.length + existingImages.length > 5) {
-      toast.error('最多只能上传5张图片');
-      return;
-    }
-    setImages(selectedImages);
   };
 
   const handleDeleteExistingImage = async (imageId) => {
@@ -102,6 +84,8 @@ const EditPostPage = () => {
       }
     }
   };
+
+
 
   if (loading) {
     return (
@@ -214,18 +198,17 @@ const EditPostPage = () => {
           {/* 图片上传 */}
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              上传新图片（可选，最多{5 - existingImages.length}张）
-            </label>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
+              上传图片（可选，总共最多10张，30MB）
+              <input 
+                type="file" 
+                multiple 
+                accept="image/*" 
+                onChange={(e) => {
+                  handleImageChange(e, setImages, existingImages);
+                }}/>
+              </label>
             {images.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm text-gray-500 mb-2">已选择 {images.length} 张新图片</p>
                 <div className="flex flex-wrap gap-2">
                   {images.map((image, index) => (
                     <div key={index} className="relative h-24 w-24 border border-gray-200 rounded-md overflow-hidden">

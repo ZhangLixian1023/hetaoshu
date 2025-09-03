@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../ui/LoadingSpinner';
@@ -7,6 +7,9 @@ const CommentForm = ({ postId, replyToComment = null, onCommentSuccess }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [isReplying, setIsReplying] = useState(!!replyToComment);
+  
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,8 +32,7 @@ const CommentForm = ({ postId, replyToComment = null, onCommentSuccess }) => {
       if (replyToComment) {
         commentData.reply_to = replyToComment.id;
       }
-      
-      await axios.post('/comments/', commentData);
+      await axios.post(`/posts/${postId}/comments/create/`, commentData);
       
       toast.success(replyToComment ? '回复成功' : '评论成功');
       

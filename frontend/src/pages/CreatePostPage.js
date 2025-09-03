@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { handleImageChange } from '../components/utils/imageUtils';
 
 const CreatePostPage = () => {
   const [title, setTitle] = useState('');
@@ -28,20 +29,12 @@ const CreatePostPage = () => {
 
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('content', content);
-      formData.append('post_type', postType);
-      
-      // 添加图片
-      for (let i = 0; i < images.length; i++) {
-        formData.append('images', images[i]);
-      }
-      
-      const response = await axios.post('/posts/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      // 直接使用axios.postForm上传文件
+      const response = await axios.postForm('/posts/create/', {
+        title,
+        content,
+        post_type: postType,
+        images: images
       });
       
       toast.success('帖子发布成功');
@@ -55,22 +48,11 @@ const CreatePostPage = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const selectedImages = Array.from(e.target.files);
-    // 限制最多上传5张图片
-    if (selectedImages.length > 5) {
-      toast.error('最多只能上传5张图片');
-      return;
-    }
-    setImages(selectedImages);
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">发布新帖子</h1>
-          <p className="text-gray-600 mt-2">分享你的学习经验或发起话题讨论</p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -138,24 +120,25 @@ const CreatePostPage = () => {
           {/* 图片上传 */}
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              上传图片（可选，最多5张）
+              上传图片（可选，总共最多10张，30MB）
+                <input 
+                  type="file" 
+                  multiple 
+                  accept="image/*" 
+                  onChange={ (e) => {
+                    handleImageChange(e, setImages, []);
+                  }}
+                />
             </label>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
+           
             {images.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm text-gray-500 mb-2">已选择 {images.length} 张图片</p>
                 <div className="flex flex-wrap gap-2">
                   {images.map((image, index) => (
                     <div key={index} className="relative h-24 w-24 border border-gray-200 rounded-md overflow-hidden">
                       <img
                         src={URL.createObjectURL(image)}
-                        alt={`预览 ${index + 1}`}
+                        alt={`用户上传的图片 ${index + 1}`}
                         className="h-full w-full object-cover"
                       />
                       <button

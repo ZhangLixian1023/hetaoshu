@@ -30,7 +30,9 @@ const SendCodePage = () => {
       navigate('/set-password');
     } catch (error) {
       console.error('发送验证码失败:', error);
-      toast.error(error.response?.data?.error || '发送验证码失败，请稍后重试');
+      // 显示更详细的错误信息
+      const errorMessage = error.response?.data?.error || '发送验证码失败，请稍后重试';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

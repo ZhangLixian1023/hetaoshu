@@ -1,5 +1,3 @@
-import React from 'react';
-
 const LoadingSpinner = ({ size = 'md' }) => {
   // 根据size设置样式
   const getSizeClass = () => {

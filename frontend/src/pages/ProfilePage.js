@@ -8,7 +8,6 @@ const ProfilePage = ({ user, setUser }) => {
   const [name, setName] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -27,7 +26,8 @@ const ProfilePage = ({ user, setUser }) => {
   const fetchUserPosts = async () => {
     try {
       const response = await axios.get(`/users/${user.id}/posts/`);
-      setUserPosts(response.data.results || []);
+      // 后端返回的直接是帖子列表，不需要访问results字段
+      setUserPosts(response.data || []);
     } catch (error) {
       console.error('获取用户帖子失败:', error);
       toast.error('获取用户帖子失败，请稍后重试');
@@ -40,7 +40,7 @@ const ProfilePage = ({ user, setUser }) => {
     
     setUpdating(true);
     try {
-      const response = await axios.put('/users/profile/', {
+      const response = await axios.put('/users/profile/update/', {
         name: name
       });
       
@@ -67,16 +67,7 @@ const ProfilePage = ({ user, setUser }) => {
       return;
     }
     
-    if (!newPassword || newPassword.length < 6) {
-      toast.error('新密码长度至少为6位');
-      return;
-    }
     
-    if (newPassword !== confirmNewPassword) {
-      toast.error('两次输入的新密码不一致');
-      return;
-    }
-
     setUpdating(true);
     try {
       await axios.put('/users/change-password/', {
@@ -88,7 +79,6 @@ const ProfilePage = ({ user, setUser }) => {
       // 清除密码表单
       setCurrentPassword('');
       setNewPassword('');
-      setConfirmNewPassword('');
       // 切换到信息标签页
       setActiveTab('info');
     } catch (error) {
@@ -269,21 +259,7 @@ const ProfilePage = ({ user, setUser }) => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="请输入新密码（至少6位）"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  确认新密码
-                </label>
-                <input
-                  type="password"
-                  id="confirmNewPassword"
-                  value={confirmNewPassword}
-                  onChange={(e) => setConfirmNewPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="请再次输入新密码"
+                  placeholder="请输入新密码"
                 />
               </div>
               

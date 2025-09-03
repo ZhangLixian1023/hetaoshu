@@ -123,10 +123,27 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
 
 # 邮件设置
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+# 开发环境使用控制台邮件后端（邮件内容会输出到容器日志中）
+# 生产环境可以切换为SMTP后端
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+
+# 控制台后端专用配置
+if EMAIL_BACKEND == 'django.core.mail.backends.console.EmailBackend':
+    # 当使用控制台后端时，不需要SMTP配置
+    # 邮件内容会直接输出到容器的标准输出(stdout)
+    # 可以通过 docker-compose logs backend 查看邮件内容
+    # 以下是默认发件人设置，用于测试
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@example.com')
+else:
+    # SMTP配置，仅在非控制台后端时生效
+    EMAIL_HOST = os.getenv('EMAIL_HOST', 'mail.ustc.edu.cn')
+    EMAIL_PORT = int(os.getenv('EMAIL_PORT', '465'))
+    EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True') == 'True'
+    EMAIL_USE_TLS = False
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'listen01@mail.ustc.edu.cn')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'YsUkj6MBBYiGegCP')
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'listen01@mail.ustc.edu.cn')
+
+# 文件上传大小限制 (31457280k = 30M)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 31457280  # 30M
+FILE_UPLOAD_MAX_MEMORY_SIZE = 31457280  # 30M
