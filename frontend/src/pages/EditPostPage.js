@@ -54,13 +54,15 @@ const EditPostPage = () => {
 
     setSubmitting(true);
     try {
-      const response = await axios.postForm(`/posts/${id}/`, {
-        title,
-        content,
-        post_type: postType,
-        images: images
-      });
-      console.log(response.status)
+      await axios.putForm(`/posts/${id}/`,
+        {
+          title,
+          content,
+          post_type: postType,
+          images: images,
+          keep_image_ids: existingImages.map(img => img.id),
+        }
+      );
       toast.success('帖子更新成功');
        // 跳转到帖子详情页
        navigate(`/posts/${id}`);
@@ -73,15 +75,12 @@ const EditPostPage = () => {
   };
 
   const handleDeleteExistingImage = async (imageId) => {
-    if (window.confirm('确定要删除这张图片吗？')) {
-      try {
-        await axios.delete(`/posts/images/${imageId}/`);
-        setExistingImages(prev => prev.filter(img => img.id !== imageId));
-        toast.success('图片已删除');
-      } catch (error) {
-        console.error('删除图片失败:', error);
-        toast.error('删除图片失败，请稍后重试');
-      }
+    try {
+      //await axios.delete(`/posts/images/${imageId}/`);
+      setExistingImages(prev => prev.filter(img => img.id !== imageId));
+    } catch (error) {
+      console.error('删除图片失败:', error);
+      toast.error('删除图片失败，请稍后重试');
     }
   };
 

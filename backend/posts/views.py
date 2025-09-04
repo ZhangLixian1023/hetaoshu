@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, status, filters,status
 from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
+from rest_framework import status, viewsets, permissions, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,11 +13,13 @@ from .serializers import (
     CommentSerializer, PostLinkSerializer
 )
 from .permissions import IsAuthorOrReadOnly, CanDeleteComment
-class ImageViewSet(viewsets.ModelViewSet):
+
+class PostImageViewSet(viewsets.ModelViewSet):
     queryset = PostImage.objects.all()
     serializer_class = PostImageSerializer
+    permission_classes = [IsAuthenticated]
 
-    # 自定义分页类
+# 自定义分页类
 class PostPagination(PageNumberPagination):
     page_size = 8  # 每页显示8条
     page_size_query_param = 'page_size'
@@ -28,24 +31,7 @@ class PostViewSet(viewsets.ModelViewSet):
     filterset_fields = ['post_type', 'author']
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'updated_at']
-    
-    @permission_classes([AllowAny])
-    def get_all_posts(self,request):
-        """获取所有活跃帖子"""
-        posts = Post.objects.filter(is_active=True).order_by('-created_at')
-        
-        # 应用分页
-        paginator = PostPagination()
-        paginated_posts = paginator.paginate_queryset(posts, request)
-        serializer = PostSerializer(paginated_posts, many=True)
-        
-        # 返回分页后的响应，包含results和next字段
-        return paginator.get_paginated_response(serializer.data)
-
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return PostDetailSerializer
-        return PostSerializer
+    pagination_class = PostPagination
     
     def get_permissions(self):
         # 为create操作明确设置权限
@@ -58,7 +44,17 @@ class PostViewSet(viewsets.ModelViewSet):
         # 其他操作允许未登录用户读取
         return [permissions.AllowAny()]
     
-    def create(self, request, *args, **kwargs):
+    def list(self, request):
+        """获取所有活跃帖子（重写父类的list方法）"""
+        posts = Post.objects.filter(is_active=True).order_by('-created_at')
+        # 应用分页
+        paginator = PostPagination()
+        paginated_posts = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(paginated_posts, many=True)
+        # 返回分页后的响应，包含results和next字段
+        return paginator.get_paginated_response(serializer.data)
+    
+    def create(self, request):
         """创建新帖子的API入口"""
         # 验证用户是否已登录
         if not request.user.is_authenticated:
@@ -69,24 +65,44 @@ class PostViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             # 设置作者为当前登录用户
             serializer.save(author=request.user)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request,*args, **kwargs):
+        """获取单个帖子详情（重写retrieve方法，对应get_post_detail）"""
+        instance = self.get_object()
+        if not instance.is_active:
+            return Response({'detail': '帖子不存在或已被删除'}, status=404)
+        serializer = PostDetailSerializer(instance)
+        return Response(serializer.data)
     
-    def user_posts(self, request,user_id=None):
-        """获取指定用户的所有帖子"""
-        user = get_object_or_404(User, id=user_id)
-        posts = Post.objects.filter(author=user, is_active=True).order_by('-created_at')
-        serializer = self.get_serializer(posts, many=True)
+    def update(self, request, *args, **kwargs):
+        """更新帖子内容和批量更新图片：删除指定ID以外的图片，添加新图片"""
+        post = self.get_object()
+        # 检查权限
+        if post.author != request.user:
+            return Response(
+                {"detail": "你没有权限更新帖子"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        serializer=PostSerializer(post,data=request.data,partial=True,context={'request':request})
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # 保留的图片ID列表
+        keep_image_ids = request.data.getlist('keep_image_ids[]')
+        print(keep_image_ids)
+        # 删除不需要保留的图片
+        PostImage.objects.filter(post=post).exclude(id__in=keep_image_ids).delete()
+        # 添加新图片
+        for image in request.FILES.getlist('images[]'):
+            PostImage.objects.create(post=post, image=image)
+        serializer.save()
+        # 返回更新后的完整帖子数据
+        updated_post = self.get_object()  # 重新获取以确保获取最新状态
         return Response(serializer.data)
 
-    @permission_classes([AllowAny])
-    def get_post_detail(self, request,pk):
-        """获取单个帖子详情"""
-        post = Post.objects.filter(pk=pk, is_active=True).first()
-        if not post:
-            return Response({'detail': '帖子不存在或已被删除'}, status=404)
-        serializer = PostDetailSerializer(post)
-        return Response(serializer.data)
     
     @action(detail=True, methods=['post'])
     def add_link(self, request, pk=None):

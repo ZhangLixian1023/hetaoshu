@@ -30,7 +30,7 @@ const CreatePostPage = () => {
     setLoading(true);
     try {
       // 直接使用axios.postForm上传文件
-      const response = await axios.postForm('/posts/create/', {
+      const response = await axios.postForm('/posts/', {
         title,
         content,
         post_type: postType,
