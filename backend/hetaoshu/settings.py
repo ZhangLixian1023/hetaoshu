@@ -141,7 +141,7 @@ else:
     EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True') == 'True'
     EMAIL_USE_TLS = False
     EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'listen01@mail.ustc.edu.cn')
-    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'YsUkj6MBBYiGegCP')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'somepassword')
     DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'listen01@mail.ustc.edu.cn')
 
 # 文件上传大小限制 (31457280k = 30M)
