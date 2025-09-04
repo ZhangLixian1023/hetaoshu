@@ -18,7 +18,6 @@ const HomePage = () => {
     setLoading(true);
     try {
       const response = await axios.get(`posts/?page=${page}`);
-      console.log(response.data);
       if (page === 1) {
         setPosts(response.data.results);
       } else {

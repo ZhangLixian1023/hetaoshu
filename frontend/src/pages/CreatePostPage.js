@@ -119,15 +119,15 @@ const CreatePostPage = () => {
           
           {/* 图片上传 */}
           <div className="bg-white p-4 rounded-lg shadow-sm">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              上传图片（可选，总共最多10张，30MB）
-                <input 
-                  type="file" 
-                  multiple 
-                  accept="image/*" 
-                  onChange={ (e) => {
-                    handleImageChange(e, setImages, []);
-                  }}
+             <label className='inline-block text-sm font-medium text-gray-700 mb-2 border-gray-300 border-2 p-2 cursor-default select-none'>
+            + 添加图片（总共最多10张，不超过30MB）已有{images.length}张
+              <input className='opacity-100 w-0' 
+                type="file" 
+                multiple 
+                accept="image/*" 
+                onChange={(e) => {
+                  handleImageChange(e, setImages);
+                }}
                 />
             </label>
            

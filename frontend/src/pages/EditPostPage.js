@@ -74,18 +74,6 @@ const EditPostPage = () => {
     }
   };
 
-  const handleDeleteExistingImage = async (imageId) => {
-    try {
-      //await axios.delete(`/posts/images/${imageId}/`);
-      setExistingImages(prev => prev.filter(img => img.id !== imageId));
-    } catch (error) {
-      console.error('删除图片失败:', error);
-      toast.error('删除图片失败，请稍后重试');
-    }
-  };
-
-
-
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[50vh]">
@@ -167,50 +155,42 @@ const EditPostPage = () => {
             ></textarea>
           </div>
           
-          {/* 已有图片 */}
-          {existingImages.length > 0 && (
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                已有图片
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {existingImages.map((image) => (
-                  <div key={image.id} className="relative h-24 w-24 border border-gray-200 rounded-md overflow-hidden">
-                    <img
-                      src={image.image}
-                      alt={image.id}
-                      className="h-full w-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                      onClick={() => handleDeleteExistingImage(image.id)}
-                    >
-                      <i className="fa fa-times text-xs"></i>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* 图片上传 */}
+          {/* 图片上传与管理 */}
           <div className="bg-white p-4 rounded-lg shadow-sm">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              上传图片（可选，总共最多10张，30MB）
-              <input 
+            <label className='inline-block text-sm font-medium text-gray-700 mb-2 border-gray-300 border-2 p-2 cursor-default select-none'>
+            + 添加图片（总共最多10张，不超过30MB）已有{images.length+existingImages.length}张
+              <input className='opacity-100 w-0' 
                 type="file" 
                 multiple 
                 accept="image/*" 
                 onChange={(e) => {
                   handleImageChange(e, setImages, existingImages);
-                }}/>
-              </label>
-            {images.length > 0 && (
+                }}
+                />
+            </label>
+            {(images.length > 0 || existingImages.length > 0) && (
               <div className="mt-4">
                 <div className="flex flex-wrap gap-2">
+                  {/* 显示已有图片 */}
+                  {existingImages.map((image) => (
+                    <div key={`existing-${image.id}`} className="relative h-24 w-24 border border-gray-200 rounded-md overflow-hidden">
+                      <img
+                        src={image.image}
+                        alt={image.id}
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
+                        onClick={() => setExistingImages(prev => prev.filter(img => img.id !== image.id))}
+                      >
+                        <i className="fa fa-times text-xs"></i>
+                      </button>
+                    </div>
+                  ))}
+                  {/* 显示新上传的图片 */}
                   {images.map((image, index) => (
-                    <div key={index} className="relative h-24 w-24 border border-gray-200 rounded-md overflow-hidden">
+                    <div key={`new-${index}`} className="relative h-24 w-24 border border-gray-200 rounded-md overflow-hidden">
                       <img
                         src={URL.createObjectURL(image)}
                         alt={`预览 ${index + 1}`}

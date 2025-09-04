@@ -26,7 +26,8 @@ export const handleImageChange = (e, setImages, existingImages = []) => {
     }
   }
   
-  setImages(selectedImages);
+  // 将新选择的图片添加到现有图片数组中，而不是替换
+  setImages(prevImages => [...prevImages, ...selectedImages]);
 };
 
 export default handleImageChange;
