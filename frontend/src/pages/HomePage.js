@@ -5,7 +5,9 @@ import { toast } from 'react-toastify';
 import PostCard from '../components/posts/PostCard';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
-const HomePage = () => {
+import Footer from '../components/layout/Footer';
+import Header from '../components/layout/Header';
+const HomePage = ({ user, handleLogout }) => {
   const navigate = useNavigate();
   // 状态管理
   const [posts, setPosts] = useState([]);
@@ -53,24 +55,23 @@ const HomePage = () => {
 
   
   // 处理点击帖子卡片的函数
-  const handlePostClick = (postId) => {
+  const handlePostClick = (themeId) => {
     // 使用React Router的navigate函数进行导航
-    navigate(`/posts/${postId}/`);
+    navigate(`/themes/${themeId}/`);
   };
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">核桃书</h1>
-      </div>
-      
-      {/* 改进的瀑布流布局 - 确保帖子位置稳定 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="w-full">
+    <Footer/>
+    <Header user={user} onLogout={handleLogout} />
+      <div className="columns-2 gap-1 px-2 mt-16">
         {posts.map(post => (
-          <div key={post.id} className="mb-6">
-            <div onClick={() => handlePostClick(post.id)} className="cursor-pointer">
-              <PostCard post={post} />
-            </div>
+          <div 
+            key={post.id} 
+            onClick={() => handlePostClick(post.theme.id)} 
+            className="cursor-pointer break-inside-avoid mb-1"
+          >
+            <PostCard post={post} />
           </div>
         ))}
       </div>

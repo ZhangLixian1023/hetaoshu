@@ -9,7 +9,6 @@ import './styles/global.css';
 
 // 布局组件
 import Header from './components/layout/Header';
-import Footer from './components/layout/Footer';
 
 // 认证组件
 import LoginPage from './pages/LoginPage';
@@ -19,6 +18,7 @@ import SetPasswordPage from './pages/SetPasswordPage';
 // 帖子组件
 import HomePage from './pages/HomePage';
 import PostDetailPage from './pages/PostDetailPage';
+import ThemeDetailPage from './pages/ThemeDetailPage';
 import CreatePostPage from './pages/CreatePostPage';
 import EditPostPage from './pages/EditPostPage';
 
@@ -120,9 +120,8 @@ function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="flex flex-col min-h-screen">
-        <Header user={user} onLogout={handleLogout} />
         
-        <main className="flex-grow container mx-auto px-4 pt-24 pb-12">
+        <main className="flex-grow container mx-auto max-w-[800px] pt-[20px] pb-[20px]">
           <Routes>
             {/* 公共路由 */}
             <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />} />
@@ -130,10 +129,12 @@ function App() {
             <Route path="/set-password" element={user ? <Navigate to="/" /> : <SetPasswordPage onLogin={handleLogin} />} />
             
             {/* 首页 - 公开访问，但登录后有更多功能 */}
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePage user={user} handleLogout={handleLogout} />} />
             
             {/* 帖子详情页 - 公开访问 */}
             <Route path="/posts/:id" element={<PostDetailPage />} />
+             {/* 主题帖详情页 - 公开访问 */}
+            <Route path="/themes/:id" element={<ThemeDetailPage />} />
             
             {/* 私有路由 */}
             <Route path="/posts/create" element={
@@ -141,6 +142,7 @@ function App() {
                 <CreatePostPage />
               </PrivateRoute>
             } />
+
             <Route path="/posts/:id/edit" element={
               <PrivateRoute>
                 <EditPostPage />
@@ -148,16 +150,16 @@ function App() {
             } />
             <Route path="/profile" element={
               <PrivateRoute>
-                <ProfilePage user={user} setUser={setUser} />
+                <ProfilePage user={user} setUser={setUser} onLogout={handleLogout} />
               </PrivateRoute>
             } />
             
             {/* 404页面 */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
+          
         </main>
         
-        <Footer />
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar={true} />
       </div>
     </Router>

@@ -1,5 +1,4 @@
-from rest_framework import viewsets, permissions, status, filters,status
-from rest_framework.decorators import action, permission_classes
+from rest_framework import viewsets, permissions, status, filters,status,exceptions
 from rest_framework.response import Response
 from rest_framework import status, viewsets, permissions, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -7,12 +6,33 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from users.models import User
-from .models import Post, PostImage, Comment, PostLink
+from .models import Post, PostImage, Theme
 from .serializers import (
-    PostSerializer, PostDetailSerializer, PostImageSerializer,
-    CommentSerializer, PostLinkSerializer
+    PostSerializer, PostImageSerializer, ThemeSerializer,ThemeReplyTreeSerializer
 )
 from .permissions import IsAuthorOrReadOnly, CanDeleteComment
+
+class ThemeViewSet(viewsets.ModelViewSet):
+    queryset = Theme.objects.filter(is_active=True)
+    serializer_class = ThemeSerializer
+    permission_classes = [IsAuthenticated]
+    def create(self, request):
+        """创建新主题的API入口"""
+        # 验证数据
+        serializer = ThemeSerializer(data=request.data, context={'request': request})
+        try:
+            serializer.is_valid(raise_exception=True)
+        except exceptions.ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        # save方法内会处理帖子和图片
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_reply_tree(self, request, pk):
+        """获取主题的评论树"""
+        theme = self.get_object()
+        serializer = ThemeReplyTreeSerializer(theme)
+        return Response(serializer.data)
 
 class PostImageViewSet(viewsets.ModelViewSet):
     queryset = PostImage.objects.all()
@@ -21,14 +41,14 @@ class PostImageViewSet(viewsets.ModelViewSet):
 
 # 自定义分页类
 class PostPagination(PageNumberPagination):
-    page_size = 8  # 每页显示8条
+    page_size = 20  # 每页显示20条
     page_size_query_param = 'page_size'
     max_page_size = 100
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.filter(is_active=True)
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['post_type', 'author']
+    filterset_fields = ['author']
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'updated_at']
     pagination_class = PostPagination
@@ -46,7 +66,7 @@ class PostViewSet(viewsets.ModelViewSet):
     
     def list(self, request):
         """获取所有活跃帖子（重写父类的list方法）"""
-        posts = Post.objects.filter(is_active=True).order_by('-created_at')
+        posts = Post.objects.filter(is_active=True,parent__isnull=True).order_by('-created_at')
         # 应用分页
         paginator = PostPagination()
         paginated_posts = paginator.paginate_queryset(posts, request)
@@ -56,35 +76,30 @@ class PostViewSet(viewsets.ModelViewSet):
     
     def create(self, request):
         """创建新帖子的API入口"""
-        # 验证用户是否已登录
-        if not request.user.is_authenticated:
-            return Response({'detail': '请先登录'}, status=status.HTTP_401_UNAUTHORIZED)
-            
         # 使用序列化器验证和保存数据，将request对象传递给context
         serializer = PostSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
+            # 验证父帖子是否存在
+            if 'parent' in request.data and request.data['parent']:
+                parent = get_object_or_404(Post, id=request.data['parent'])
             # 设置作者为当前登录用户
-            serializer.save(author=request.user)
+            serializer.save(author=request.user,theme=parent.theme,parent=parent)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request,*args, **kwargs):
         """获取单个帖子详情（重写retrieve方法，对应get_post_detail）"""
         instance = self.get_object()
         if not instance.is_active:
             return Response({'detail': '帖子不存在或已被删除'}, status=404)
-        serializer = PostDetailSerializer(instance)
+        serializer = PostSerializer(instance)
+        print(serializer.data)
         return Response(serializer.data)
     
     def update(self, request, *args, **kwargs):
         """更新帖子内容和批量更新图片：删除指定ID以外的图片，添加新图片"""
         post = self.get_object()
-        # 检查权限
-        if post.author != request.user:
-            return Response(
-                {"detail": "你没有权限更新帖子"},
-                status=status.HTTP_403_FORBIDDEN
-            )
         serializer=PostSerializer(post,data=request.data,partial=True,context={'request':request})
         if serializer.is_valid():
             serializer.save()
@@ -102,77 +117,19 @@ class PostViewSet(viewsets.ModelViewSet):
         # 返回更新后的完整帖子数据
         updated_post = self.get_object()  # 重新获取以确保获取最新状态
         return Response(serializer.data)
-
     
-    @action(detail=True, methods=['post'])
-    def add_link(self, request, pk=None):
-        """为帖子添加链接到其他帖子"""
-        post = self.get_object()
-        target_post_id = request.data.get('target_post_id')
-        
-        if not target_post_id:
-            return Response({'error': '请提供目标帖子ID'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            target_post = Post.objects.get(pk=target_post_id, is_active=True)
-        except Post.DoesNotExist:
-            return Response({'error': '目标帖子不存在'}, status=status.HTTP_404_NOT_FOUND)
-        
-        # 检查是否已存在链接
-        if PostLink.objects.filter(source_post=post, target_post=target_post).exists():
-            return Response({'error': '链接已存在'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        post_link = PostLink.objects.create(source_post=post, target_post=target_post)
-        return Response(
-            PostLinkSerializer(post_link).data,
-            status=status.HTTP_201_CREATED
-        )
-
-class CommentViewSet(viewsets.ModelViewSet):
-    serializer_class = CommentSerializer
-    queryset = Comment.objects.filter(is_active=True)
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['post', 'parent', 'author']
-    ordering_fields = ['created_at', 'updated_at']
-    
-    @permission_classes([AllowAny])
-    def get_post_comments(self,request,pk):
-        """获取帖子的所有评论"""
-        post = Post.objects.filter(pk=pk, is_active=True).first()
-        if not post:
-            return Response({'detail': '帖子不存在或已被删除'}, status=404)
-        comments = Comment.objects.filter(post=post, is_active=True).order_by('created_at')
-        serializer = CommentSerializer(comments, many=True)
+    def get_comment(self,request,pk):
+        """获取帖子的评论"""
+        post=self.get_object()
+        #post = get_object_or_404(Post, id=post_id)
+        comments = post.replies.filter(is_active=True).order_by('-created_at')
+        serializer = PostSerializer(comments, many=True)
         return Response(serializer.data)
-    
-    def get_queryset(self):
-        return Comment.objects.filter(is_active=True)
-    
-    def get_permissions(self):
-        if self.action in ['update', 'partial_update', 'destroy']:
-            return [permissions.IsAuthenticated(), CanDeleteComment()]
-        return [permissions.IsAuthenticatedOrReadOnly()]
-    def create(self, request, *args, **kwargs):
-        """创建新评论的API入口"""
-        # 验证用户是否已登录
-        if not request.user.is_authenticated:
-            return Response({'detail': '请先登录'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        # 验证帖子是否存在
-        post_id = self.kwargs.get('pk')
-        post = get_object_or_404(Post, pk=post_id, is_active=True)
-        
-        # 验证评论内容
-        content = request.data.get('content')
-        if not content or not content.strip():
-            return Response({'detail': '评论内容不能为空'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # 创建评论
-        comment = Comment.objects.create(
-            post=post,
-            author=request.user,
-            content=content
-        )
-        
-        return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+
+    def get_images(self,request,pk):
+        """获取帖子的图片"""
+        post = self.get_object()
+        images = post.images.all()
+        serializer = PostImageSerializer(images, many=True)
+        return Response(serializer.data)
 

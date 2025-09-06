@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import PostCard from '../components/posts/PostCard';
 
-const ProfilePage = ({ user, setUser }) => {
+const ProfilePage = ({ user, setUser, onLogout }) => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -12,6 +14,14 @@ const ProfilePage = ({ user, setUser }) => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [activeTab, setActiveTab] = useState('info'); // 'info', 'posts', 'password'
+
+  // 退出登录
+  const handleLogout = async () => {
+    if (onLogout) {
+      await onLogout();
+    }
+    navigate('/login');
+  };
 
   useEffect(() => {
     // 初始化用户信息
@@ -189,7 +199,15 @@ const ProfilePage = ({ user, setUser }) => {
                 />
               </div>
               
-              <div className="flex justify-end">
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  <i className="fa fa-sign-out mr-1"></i>
+                  退出登录
+                </button>
                 <button
                   type="submit"
                   disabled={updating}

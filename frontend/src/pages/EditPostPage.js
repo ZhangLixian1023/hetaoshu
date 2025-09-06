@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useParams, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { handleImageChange } from '../components/utils/imageUtils';
+import ImageCarousel from '../components/posts/ImageCarousel';
+import { getThemeConfig } from '../components/posts/themeTypes';
 
 const EditPostPage = () => {
   const { id } = useParams();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [postType, setPostType] = useState('share'); // 'share' 或 'discussion'
+  const [themeType, setThemeType] = useState('share'); // 'share', 'discussion', 'ad', 'notification'
   const [images, setImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]); // 已有的图片
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ const EditPostPage = () => {
         const post = response.data;
         setTitle(post.title);
         setContent(post.content);
-        setPostType(post.post_type);
+        setThemeType(post.theme_type); 
         setExistingImages(post.images || []);
       } catch (error) {
         console.error('获取帖子详情失败:', error);
@@ -37,6 +39,12 @@ const EditPostPage = () => {
 
     fetchPost();
   }, [id, navigate]);
+
+  // 帖子类型样式
+  const { borderColor, bgColor, label, textColor } = getThemeConfig(themeType);
+  const headerBgColor = bgColor;
+  const typeText = label;
+  const typeColor = textColor;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,20 +66,31 @@ const EditPostPage = () => {
         {
           title,
           content,
-          post_type: postType,
+          theme_type: themeType,
           images: images,
           keep_image_ids: existingImages.map(img => img.id),
         }
       );
       toast.success('帖子更新成功');
-       // 跳转到帖子详情页
-       navigate(`/posts/${id}`);
+      // 跳转到帖子详情页
+      navigate(`/posts/${id}`);
     } catch (error) {
       console.error('更新帖子失败:', error);
       toast.error(error.response?.data?.error || '更新帖子失败，请稍后重试');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // 准备用于ImageCarousel的图片数据
+  const getImagesForCarousel = () => {
+    // 合并现有图片和新上传的图片用于预览
+    const allImages = [...existingImages];
+    const newImagesFormatted = images.map((image, index) => ({
+      id: `new-${index}`,
+      image: URL.createObjectURL(image)
+    }));
+    return [...allImages, ...newImagesFormatted];
   };
 
   if (loading) {
@@ -86,160 +105,96 @@ const EditPostPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">编辑帖子</h1>
-          <p className="text-gray-600 mt-2">修改你的帖子内容</p>
+    <div className={`container mx-auto px-4 py-8 border-[1px] ${borderColor}`}>
+      <div className={`p-4 ${headerBgColor}`}>
+        <h2 className={`text-xl font-semibold ${typeColor}`}>{typeText}</h2>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="p-4 bg-white">
+        {/* 表单内容 - 标题、内容、图片上传等 */}
+        <div className="mb-4">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">标题</label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="请输入标题"
+            maxLength={100}
+          />
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 帖子类型 */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              帖子类型
-            </label>
-            <div className="flex space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="postType"
-                  value="share"
-                  checked={postType === 'share'}
-                  onChange={(e) => setPostType(e.target.value)}
-                  className="form-radio h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
-                />
-                <span className="ml-2 text-sm text-gray-700">个人分享</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="postType"
-                  value="discussion"
-                  checked={postType === 'discussion'}
-                  onChange={(e) => setPostType(e.target.value)}
-                  className="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                />
-                <span className="ml-2 text-sm text-gray-700">话题讨论</span>
-              </label>
+        <div className="mb-4">
+          <label htmlFor="themeType" className="block text-sm font-medium text-gray-700 mb-1">主题类型</label>
+          <select
+            id="themeType"
+            value={themeType}
+            onChange={(e) => setThemeType(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="share">分享</option>
+            <option value="discussion">讨论</option>
+            <option value="ad">广告</option>
+            <option value="notification">通知</option>
+          </select>
+        </div>
+        
+        <div className="mb-4">
+          <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">内容</label>
+          <textarea
+            id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[200px]"
+            placeholder="请输入内容"
+          />
+        </div>
+        
+        {/* 图片上传部分 */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">图片</label>
+          
+          {/* 已有的图片和新上传的图片预览 */}
+          {getImagesForCarousel().length > 0 && (
+            <div className="mb-4">
+              <ImageCarousel images={getImagesForCarousel()} alt={title} />
             </div>
-          </div>
+          )}
           
-          {/* 标题 */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-              标题
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="请输入标题"
-            />
-          </div>
-          
-          {/* 内容 */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-              内容
-            </label>
-            <textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="请输入帖子内容..."
-            ></textarea>
-          </div>
-          
-          {/* 图片上传与管理 */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <label className='inline-block text-sm font-medium text-gray-700 mb-2 border-gray-300 border-2 p-2 cursor-default select-none'>
-            + 添加图片（总共最多10张，不超过30MB）已有{images.length+existingImages.length}张
-              <input className='opacity-100 w-0' 
-                type="file" 
-                multiple 
-                accept="image/*" 
-                onChange={(e) => {
-                  handleImageChange(e, setImages, existingImages);
-                }}
-                />
-            </label>
-            {(images.length > 0 || existingImages.length > 0) && (
-              <div className="mt-4">
-                <div className="flex flex-wrap gap-2">
-                  {/* 显示已有图片 */}
-                  {existingImages.map((image) => (
-                    <div key={`existing-${image.id}`} className="relative h-24 w-24 border border-gray-200 rounded-md overflow-hidden">
-                      <img
-                        src={image.image}
-                        alt={image.id}
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                        onClick={() => setExistingImages(prev => prev.filter(img => img.id !== image.id))}
-                      >
-                        <i className="fa fa-times text-xs"></i>
-                      </button>
-                    </div>
-                  ))}
-                  {/* 显示新上传的图片 */}
-                  {images.map((image, index) => (
-                    <div key={`new-${index}`} className="relative h-24 w-24 border border-gray-200 rounded-md overflow-hidden">
-                      <img
-                        src={URL.createObjectURL(image)}
-                        alt={`预览 ${index + 1}`}
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                        onClick={() => {
-                          const newImages = [...images];
-                          newImages.splice(index, 1);
-                          setImages(newImages);
-                        }}
-                      >
-                        <i className="fa fa-times text-xs"></i>
-                      </button>
-                    </div>
-                  ))}
-                </div>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => handleImageChange(e, setImages, existingImages)}
+            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+        </div>
+        
+        <div className="flex justify-end space-x-3">
+          <button 
+            type="button" 
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            取消
+          </button>
+          <button 
+            type="submit" 
+            disabled={submitting}
+            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            {submitting ? (
+              <div className="flex items-center">
+                <LoadingSpinner size="sm" />
+                <span className="ml-2">保存中...</span>
               </div>
+            ) : (
+              '保存'
             )}
-          </div>
-          
-          {/* 提交按钮 */}
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              取消
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              {submitting ? (
-                <div className="flex items-center">
-                  <LoadingSpinner size="sm" />
-                  <span className="ml-2">保存中...</span>
-                </div>
-              ) : (
-                <span>保存修改</span>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

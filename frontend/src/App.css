@@ -82,3 +82,13 @@ button {
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
+
+/* 隐藏滚动条但保留滚动功能 */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -3,9 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import CommentList from '../components/comments/CommentList';
-import CommentForm from '../components/comments/CommentForm';
+import CommentList from '../components/posts/CommentList';
+import CommentForm from '../components/posts/CommentForm';
 import ImageCarousel from '../components/posts/ImageCarousel';
+import { getThemeConfig } from '../components/posts/themeTypes';
 
 const PostDetailPage = () => {
   const { id } = useParams();
@@ -72,16 +73,17 @@ const PostDetailPage = () => {
   // 判断当前用户是否是帖子作者
   const isAuthor = user && post.author && user.student_id === post.author.student_id;
   
-  // 帖子类型样式 - 个人分享(红色)，话题讨论(蓝色)
-  const borderColor = post.post_type === 'share' ? 'border-red-500' : 'border-blue-500';
-  const headerBgColor = post.post_type === 'share' ? 'bg-red-50' : 'bg-blue-50';
-  const typeText = post.post_type === 'share' ? '个人分享' : '话题讨论';
-  const typeColor = post.post_type === 'share' ? 'text-red-600' : 'text-blue-600';
+  // 帖子类型样式 - 使用主题配置字典
+  const themeType = post.theme_type; // 兼容旧数据
+  const { borderColor, bgColor, label, textColor } = getThemeConfig(themeType);
+  const headerBgColor = bgColor;
+  const typeText = label;
+  const typeColor = textColor;
   
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="w-full">
       {/* 帖子标题栏 */}
-      <div className={`rounded-t-lg p-5 ${headerBgColor} border ${borderColor}`}>
+      <div className={`${headerBgColor} border ${borderColor}`}>
         <div className="flex justify-between items-center">
           <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${typeColor} bg-opacity-20`}>
             {typeText}
@@ -90,7 +92,7 @@ const PostDetailPage = () => {
           {/* 作者操作按钮 */}
           {isAuthor && (
             <div className="flex space-x-2">
-              {post.post_type === 'share' && ( // 只有个人分享可以编辑
+              {themeType === 'share' && ( // 只有个人分享可以编辑
                 <Link 
                   to={`/posts/${id}/edit`}
                   className="text-sm text-gray-600 hover:text-blue-600"
@@ -118,24 +120,24 @@ const PostDetailPage = () => {
       </div>
       
       {/* 帖子内容 */}
-      <div className={`p-6 bg-white border ${borderColor}`}>
-        {/* 帖子图片 - 使用轮播组件 */}
+      <div className={`bg-white `}>
+        {/* 帖子图片 - 使用轮播组件（全宽度显示） */}
         {post.images && post.images.length > 0 && (
-          <div className="mb-6 rounded-lg overflow-hidden shadow-md">
+          <div className="w-full">
             <ImageCarousel images={post.images} alt={`${post.title}的图片`} />
           </div>
         )}
         
-        {/* 帖子文本内容 */}
-        <div className="prose max-w-none mb-6">
+        {/* 帖子文本内容 - 保留内边距 */}
+        <div className="prose max-w-none p-3">
           {post.content.split('\n').map((paragraph, index) => (
             <p key={index} className="my-3">{paragraph}</p>
           ))}
         </div>
         
-        {/* 相关帖子链接 */}
+        {/* 相关帖子链接 - 保留内边距 */}
         {post.outgoing_links && post.outgoing_links.length > 0 && (
-          <div className="mt-8 pt-4 border-t border-gray-200">
+          <div className="mt-0 pt-4 border-t border-gray-200 p-6">
             <h3 className="font-semibold text-gray-700 mb-3">相关帖子:</h3>
             <ul className="list-disc pl-5 space-y-1">
               {post.outgoing_links.map(link => (
@@ -153,22 +155,18 @@ const PostDetailPage = () => {
         )}
       </div>
       
-      {/* 评论区 */}
-      <div className={`rounded-b-lg bg-white border ${borderColor} p-6`}>
+      {/* 评论区 - 保留内边距 */}
+      <div className={`bg-white p-2`}>
         <h2 className="text-xl font-bold mb-2">评论</h2>
         
         {/* 评论表单 */}
         <CommentForm postId={id} onCommentSuccess={fetchPost} />
         
         {/* 评论列表 */}
-        {post.comments && post.comments.length > 0 ? (
-          <CommentList 
+        <CommentList 
             postId={id}
             onRefresh={fetchPost}
           />
-        ) : (
-          <p className="text-gray-500 mt-6">暂无评论，来发表第一条评论吧~</p>
-        )}
       </div>
     </div>
   );

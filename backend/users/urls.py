@@ -21,7 +21,7 @@ from posts.models import Post
 def get_user_posts(request, user_id):
     """获取指定用户的所有帖子"""
     user = get_object_or_404(User, id=user_id)
-    posts = Post.objects.filter(author=user, is_active=True).order_by('-created_at')
+    posts = user.posts.filter(is_active=True).order_by('-created_at')
     serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
 

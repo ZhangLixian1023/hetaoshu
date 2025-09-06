@@ -10,11 +10,11 @@ const ImageCarousel = ({ images, alt = '' }) => {
   
   if (images.length === 1) {
     return (
-      <div className="relative w-full pb-[75%]">
+      <div className="relative w-full">
         <img 
           src={images[0].image} 
           alt={alt || 'Post image'}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="w-full h-full  object-contain"
         />
       </div>
     );
@@ -47,11 +47,11 @@ const ImageCarousel = ({ images, alt = '' }) => {
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {images.map((image, index) => (
-          <div key={image.id} className="min-w-full h-full">
+          <div key={image.id} className=" h-full min-w-full">
             <img 
               src={image.image} 
               alt={`${alt} ${index + 1}`}
-              className="w-full h-full object-cover"
+              className=" h-full  object-contain w-full"
             />
           </div>
         ))}
