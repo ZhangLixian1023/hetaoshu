@@ -1,0 +1,141 @@
+/* 基础样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* 瀑布流容器 */
+.xiaohongshu-feed {
+  background-color: #f5f5f5;
+  padding: 0px 0;
+  width: 100%;
+}
+
+.feed-columns {
+   display: flex;
+  justify-content: center;
+  gap: 1px;
+  max-width: calc(800px + 32px); /* 2列*400px + 间距 */ 
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.feed-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* 帖子卡片样式 */
+.post-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 图片容器和图片样式 */
+.post-image-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.post-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.post-card:hover .post-image {
+  transform: scale(1.02);
+}
+
+/* 帖子内容样式 */
+.post-content {
+  padding: 10px 12px;
+}
+
+.post-user {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 6px;
+  object-fit: cover;
+}
+
+.username {
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+.post-title {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 帖子操作按钮 */
+.post-actions {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #888;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+}
+
+/* 图标样式 */
+.icon-heart::before {
+  content: '❤️';
+  margin-right: 4px;
+  font-size: 14px;
+}
+
+.icon-comment::before {
+  content: '💬';
+  margin-right: 4px;
+  font-size: 14px;
+}
+
+.icon-share::before {
+  content: '🔗';
+  font-size: 14px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .feed-columns {
+    gap: 1px;
+  }
+  
+  .post-card {
+    border-radius: 1px;
+  }
+}

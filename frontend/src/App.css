@@ -1,4 +1,5 @@
 /* 全局样式重置 */
+
 * {
   box-sizing: border-box;
 }
@@ -92,3 +93,4 @@ button {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback,useRef } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -7,6 +7,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 import Footer from '../components/layout/Footer';
 import Header from '../components/layout/Header';
+import XiaohongshuFeed from './xiaohongshu';
 const HomePage = ({ user, handleLogout }) => {
   const navigate = useNavigate();
   // 状态管理
@@ -14,15 +15,17 @@ const HomePage = ({ user, handleLogout }) => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  
+
   // 加载帖子数据 - 使用useCallback防止重复创建
   const loadPosts = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`posts/?page=${page}`);
+      console.log(`get page ${page}, response:`,response.data.results);
       if (page === 1) {
         setPosts(response.data.results);
       } else {
+        // 这里只添加新帖子，不重新排列已有帖子
         setPosts(prev => [...prev, ...response.data.results]);
       }
       // 检查是否有更多页
@@ -37,10 +40,13 @@ const HomePage = ({ user, handleLogout }) => {
   
   // 初始加载和分页加载
   useEffect(() => {
-    loadPosts();
+    if(hasMore){
+      loadPosts();
+    }
   }, [page]);
   
   // 监听滚动，实现无限加载
+  // 当loading从true变为false时，即加载已经完成，才有可能触发页码增加
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + document.documentElement.scrollTop 
@@ -49,8 +55,9 @@ const HomePage = ({ user, handleLogout }) => {
       }
     };
     window.addEventListener('scroll', handleScroll);
+    
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, hasMore]);
+  }, [loading]);
   
 
   
@@ -59,23 +66,18 @@ const HomePage = ({ user, handleLogout }) => {
     // 使用React Router的navigate函数进行导航
     navigate(`/themes/${themeId}/`);
   };
-
+  
+  
   return (
-    <div className="w-full">
+    <div >
+      <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
     <Footer/>
     <Header user={user} onLogout={handleLogout} />
-      <div className="columns-2 gap-1 px-2 mt-16">
-        {posts.map(post => (
-          <div 
-            key={post.id} 
-            onClick={() => handlePostClick(post.theme.id)} 
-            className="cursor-pointer break-inside-avoid mb-1"
-          >
-            <PostCard post={post} />
-          </div>
-        ))}
-      </div>
-      
+
+    {/*加载两列帖子*/}
+    <XiaohongshuFeed posts={posts} />
+    
+
       {/* 加载状态 */}
       {loading && (
         <div className="flex justify-center mt-8">

@@ -21,6 +21,7 @@ import PostDetailPage from './pages/PostDetailPage';
 import ThemeDetailPage from './pages/ThemeDetailPage';
 import CreatePostPage from './pages/CreatePostPage';
 import EditPostPage from './pages/EditPostPage';
+import XiaohongshuPage from './pages/xiaohongshu';
 
 // 个人组件
 import ProfilePage from './pages/ProfilePage';
@@ -130,7 +131,7 @@ function App() {
             
             {/* 首页 - 公开访问，但登录后有更多功能 */}
             <Route path="/" element={<HomePage user={user} handleLogout={handleLogout} />} />
-            
+            {/*<Route path="/xiaohongshu" element={<XiaohongshuPage/>} />*/}
             {/* 帖子详情页 - 公开访问 */}
             <Route path="/posts/:id" element={<PostDetailPage />} />
              {/* 主题帖详情页 - 公开访问 */}

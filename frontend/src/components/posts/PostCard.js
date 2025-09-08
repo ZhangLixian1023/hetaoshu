@@ -1,8 +1,27 @@
-import React from 'react';
-import ImageCarousel from './ImageCarousel';
+import { useRef} from 'react';
+import '../../pages/xiaohongshu.css'
 import { getThemeConfig } from './themeTypes';
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, containerWidth }) => {
+  const imageRatio = useRef(1);
+  const imageContainerRef = useRef(null); 
+ // 图片加载完成后计算宽高比
+  const handleImageLoad = (e) => {
+    const width = e.target.naturalWidth;
+    const height = e.target.naturalHeight;
+    const ratio = height / width; // 计算高宽比
+    // 设置图片容器高度
+    if (imageContainerRef.current) {
+      // 最大高宽比限制为1.34
+      const appliedRatio = Math.min(ratio, 1.34); 
+      imageRatio.current = appliedRatio;     
+     // 设置容器高度, 这只在图片初次加载时有效，窗口变化时就不会再设定了
+     imageContainerRef.current.style.width = `${containerWidth}px`;
+     imageContainerRef.current.style.height = `${containerWidth * imageRatio.current}px`;
+    }
+  };
+
+ 
   // 使用主题类型配置获取边框颜色
   const { borderColor } = getThemeConfig(post.theme.theme_type);
   
@@ -12,14 +31,21 @@ const PostCard = ({ post }) => {
   };
 
   return (
-    <div className={`w-full overflow-hidden shadow-md hover:shadow-lg transition-shadow border-[1px] ${borderColor}`}>
+    <div className='post-card'>
       {/* 根据image_count决定显示图片还是摘要 */}
       {post.image_count > 0 && post.first_image ? (
         // 有图片时直接使用first_image
-        <ImageCarousel images={[post.first_image]} alt={post.title} />
+        <div className='post-image-container'  ref={imageContainerRef} style={{width:`${containerWidth}px`,height:`${containerWidth * imageRatio.current}px` }}>
+       <img
+          src={post.first_image.image} 
+          alt={post.title}
+          onLoad={handleImageLoad}
+          className='post-image'
+        />
+        </div>
       ) : (
         // 没有图片时显示摘要
-        <div className="bg-gray-100 h-40 flex items-center justify-center p-4">
+        <div className="post-image-container" style={{height:'100px'}}>
           <p className="text-gray-700 text-center text-lg">
             {getSummary(post.content)}
           </p>
@@ -46,7 +72,7 @@ const PostCard = ({ post }) => {
             {post.comment_count} 条评论
           </div>
         )}
-      </div>
+    </div>
     </div>
   );
 };

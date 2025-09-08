@@ -111,6 +111,6 @@ class PostSerializer(serializers.ModelSerializer):
         if request and 'images[]' in request.FILES:
             # 如果是单个文件
             if isinstance(request.FILES.get('images[]'), InMemoryUploadedFile):
-                for image in request.FILES.getlist('images[]'):
-                    PostImage.objects.create(post=post, image=image)        
+                for (order,image) in enumerate(request.FILES.getlist('images[]')):
+                    PostImage.objects.create(post=post, image=image,order=order)        
         return post
