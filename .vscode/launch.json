@@ -13,6 +13,10 @@
         {
           "localRoot": "${workspaceFolder}/backend",
           "remoteRoot": "/app"
+        },
+        {
+          "localRoot": "${workspaceFolder}/frontend",
+          "remoteRoot": "/app"
         }
       ],
       "justMyCode": true,
@@ -29,6 +33,10 @@
       "pathMappings": [
         {
           "localRoot": "${workspaceFolder}/backend",
+          "remoteRoot": "/app"
+        },
+        {
+          "localRoot": "${workspaceFolder}/frontend",
           "remoteRoot": "/app"
         }
       ],

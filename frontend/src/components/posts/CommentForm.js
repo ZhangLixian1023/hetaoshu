@@ -69,7 +69,7 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
       {/* 回复信息显示 - 保持简单的回复提示 */}
       {replyToComment && (
         <div className="mb-3 text-sm text-gray-500">
-          <span>回复 @{replyToComment.author.student_id}</span>
+          <span>回复 @{replyToComment.author.name}</span>
         </div>
       )}
 

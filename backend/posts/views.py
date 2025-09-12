@@ -41,7 +41,7 @@ class PostImageViewSet(viewsets.ModelViewSet):
 
 # 自定义分页类
 class PostPagination(PageNumberPagination):
-    page_size = 8  # 每页显示20条
+    page_size = 20  # 每页显示20条
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -54,15 +54,12 @@ class PostViewSet(viewsets.ModelViewSet):
     pagination_class = PostPagination
     
     def get_permissions(self):
-        # 为create操作明确设置权限
-        if self.action == 'create':
-            # 创建帖子需要登录
-            return [permissions.IsAuthenticated()]
-        elif self.action in ['update', 'partial_update', 'destroy']:
-            # 个人分享帖可以修改和删除，话题讨论帖只能删除不能修改
+        # 所有操作都需要登录
+        if self.action in ['update', 'partial_update', 'destroy']:
+            # 修改和删除操作还需要作者权限
             return [permissions.IsAuthenticated(), IsAuthorOrReadOnly()]
-        # 其他操作允许未登录用户读取
-        return [permissions.AllowAny()]
+        # 其他所有操作都需要登录
+        return [permissions.IsAuthenticated()]
     
     def list(self, request):
         """获取所有活跃帖子（重写父类的list方法）"""

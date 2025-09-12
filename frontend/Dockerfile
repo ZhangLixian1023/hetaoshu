@@ -1,5 +1,5 @@
 # 开发环境Dockerfile
-FROM node:16-alpine
+FROM node:22-alpine
 WORKDIR /app
 
 # 添加包管理工具

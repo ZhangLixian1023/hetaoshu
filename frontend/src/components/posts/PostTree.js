@@ -83,11 +83,7 @@ const [images, setImages] = useState([]);
     }
   };
   
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-  
-  if (!post) {
+  if (!loading && !post) {
     return (
       <div className="text-center py-16">
         <p className="text-gray-500">帖子不存在或已被删除</p>
@@ -96,7 +92,11 @@ const [images, setImages] = useState([]);
     );
   }
   
-  // 判断当前用户是否是帖子作者
+  
+ 
+  console.log('PostTree: before return, post is:',post);
+  if(post && !loading){
+    // 判断当前用户是否是帖子作者
   const isAuthor = user && post.author && user.student_id === post.author.student_id;
   // 帖子类型样式 - 使用主题配置字典
   const themeType = theme.theme_type;
@@ -104,26 +104,17 @@ const [images, setImages] = useState([]);
   const headerBgColor = bgColor;
   const typeText = label;
   const typeColor = textColor;
- 
-  console.log('PostTree: before return, post is:',post);
-  return (
+    return (
     <div className="w-full">
       {/* 帖子标题栏 */}
       <div className={`${headerBgColor}`}>
         <div className="flex justify-between items-center">
-          <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${typeColor} bg-opacity-20`}>
-            {typeText}
+          <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full bg-opacity-20`}>
           </span>
           
           {/* 作者操作按钮 */}
           {isAuthor && (
             <div className="flex space-x-2 mr-2">
-                <Link 
-                  to={`/posts/${post.id}/edit`}
-                  className="text-sm text-gray-600 hover:text-blue-600"
-                >
-                  编辑
-                </Link>
               <button
                 onClick={handleDeletePost}
                 className="text-sm text-gray-600 hover:text-red-600"
@@ -137,7 +128,7 @@ const [images, setImages] = useState([]);
         <h1 className="text-2xl font-bold m-2">{post.title}</h1>
         
         <div className="flex items-center text-gray-600 text-sm p-2">
-          <span>作者: { post.author.student_id}</span>
+          <span>作者: {post.author.name || post.author.student_id}</span>
           <span className="mx-2">•</span>
           <span>{new Date(post.created_at).toLocaleString()}</span>
         </div>
@@ -217,6 +208,8 @@ const [images, setImages] = useState([]);
     </div>
   );
 
+  }
+  
 };
 
 export default PostTree;

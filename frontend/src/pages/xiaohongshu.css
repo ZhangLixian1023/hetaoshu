@@ -9,23 +9,14 @@
 /* 瀑布流容器 */
 .xiaohongshu-feed {
   background-color: #f5f5f5;
-  padding: 0px 0;
+  padding: 50px 0;
   width: 100%;
 }
 
 .feed-columns {
-   display: flex;
-  justify-content: center;
-  gap: 1px;
-  max-width: calc(800px + 32px); /* 2列*400px + 间距 */ 
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-.feed-column {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 5px;
 }
 
 /* 帖子卡片样式 */
@@ -35,6 +26,9 @@
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  height: 280px;
+  justify-self: center;
 }
 
 .post-card:hover {
@@ -47,6 +41,7 @@
   position: relative;
   overflow: hidden;
   width: 100%;
+  height:60%
 }
 
 .post-image {
@@ -132,10 +127,22 @@
 /* 响应式调整 */
 @media (max-width: 768px) {
   .feed-columns {
-    gap: 1px;
+    gap: 12px;
   }
   
   .post-card {
-    border-radius: 1px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .feed-columns {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+  
+  .post-card {
+    width: 180px;
+    height: 280px;
   }
 }

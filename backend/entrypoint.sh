@@ -7,15 +7,11 @@ until python -c "import mysql.connector; mysql.connector.connect(host='$DB_HOST'
 done
 
 # 执行数据库迁移
-python manage.py migrate --noinput
+python manage.py migrate
 
 # 收集静态文件
 python manage.py collectstatic --noinput
 
-# 创建超级用户（如果需要）
-if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
-  python manage.py createsuperuser --noinput || true
-fi
 
 # 启动主应用程序
 exec "$@"

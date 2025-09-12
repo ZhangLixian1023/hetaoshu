@@ -99,11 +99,6 @@ DB_PASSWORD=your_secure_db_password
 DB_HOST=db
 DB_PORT=3306
 
-# Django超级用户设置
-DJANGO_SUPERUSER_USERNAME=admin
-DJANGO_SUPERUSER_EMAIL=admin@example.com
-DJANGO_SUPERUSER_PASSWORD=your_secure_admin_password
-
 # 邮件设置（开发环境可使用模拟邮件服务器）
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend  # 开发环境可使用控制台输出
 # EMAIL_HOST=smtp.your-email-provider.com

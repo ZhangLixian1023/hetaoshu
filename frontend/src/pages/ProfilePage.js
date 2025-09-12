@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect ,useCallback} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import PostCard from '../components/posts/PostCard';
+import './xiaohongshu.css'; // 我们将在同一个文件中包含CSS
 
 const ProfilePage = ({ user, setUser, onLogout }) => {
   const navigate = useNavigate();
@@ -23,17 +24,8 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
     navigate('/login');
   };
 
-  useEffect(() => {
-    // 初始化用户信息
-    if (user) {
-      setName(user.name || '');
-      fetchUserPosts();
-    }
-    setLoading(false);
-  }, [user]);
-
   // 获取用户发布的帖子
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = useCallback(async () => {
     try {
       const response = await axios.get(`/users/${user.id}/posts/`);
       // 后端返回的直接是帖子列表，不需要访问results字段
@@ -42,7 +34,16 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
       console.error('获取用户帖子失败:', error);
       toast.error('获取用户帖子失败，请稍后重试');
     }
-  };
+  }, [user]);
+  useEffect(() => {
+    // 初始化用户信息
+    if (user) {
+      setName(user.name || '');
+      fetchUserPosts();
+    }
+    setLoading(false);
+  }, [user, fetchUserPosts]);
+
 
   // 更新用户信息
   const handleUpdateInfo = async (e) => {
@@ -240,11 +241,15 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
                 <p>您还没有发布任何帖子</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
-                {userPosts.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
-              </div>
+              <div className="xiaohongshu-feed">
+      <div className="feed-columns">
+          {userPosts.map(post => (
+           <a href={`/themes/${post.theme.id}/`}  target='_blank'>
+           <PostCard key={post.id} post={post}/>
+           </a>
+          ))}
+      </div>
+    </div>
             )}
           </div>
         )}

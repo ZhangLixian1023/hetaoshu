@@ -72,7 +72,7 @@ const CommentList = ({ themeId, onRefresh, onReply }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-1">
                 <span className="text-sm font-medium text-gray-900">
-                  {comment.author.student_id}
+                  {comment.author.name || comment.author.student_id}
                 </span>
                 
                 {/* 回复按钮 - 所有评论和回复都可被回复 */}
@@ -96,10 +96,10 @@ const CommentList = ({ themeId, onRefresh, onReply }) => {
                 )}
                 
                 {comment.reply_to && (
-                  <span className="text-xs text-blue-600">
-                    @{comment.reply_to.author.student_id}
-                  </span>
-                )}
+                <span className="text-xs text-blue-600">
+                  @{comment.reply_to.author.name || comment.reply_to.author.student_id}
+                </span>
+              )}
               </div>
               
               <div className="flex items-center">
@@ -142,13 +142,6 @@ const CommentList = ({ themeId, onRefresh, onReply }) => {
     return count;
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-4">
-        <LoadingSpinner size="md" />
-      </div>
-    );
-  }
 
   const totalComments = calculateTotalComments(commentTree);
   

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 import 'tailwindcss/tailwind.css';
@@ -7,8 +7,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/global.css';
 
-// 布局组件
-import Header from './components/layout/Header';
 
 // 认证组件
 import LoginPage from './pages/LoginPage';
@@ -17,11 +15,8 @@ import SetPasswordPage from './pages/SetPasswordPage';
 
 // 帖子组件
 import HomePage from './pages/HomePage';
-import PostDetailPage from './pages/PostDetailPage';
 import ThemeDetailPage from './pages/ThemeDetailPage';
 import CreatePostPage from './pages/CreatePostPage';
-import EditPostPage from './pages/EditPostPage';
-import XiaohongshuPage from './pages/xiaohongshu';
 
 // 个人组件
 import ProfilePage from './pages/ProfilePage';
@@ -43,11 +38,15 @@ if (DEBUG) {
   console.log('API URL:', API_URL);
 }
 
-// 全局axios配置
 axios.defaults.baseURL = API_URL;
+
 // 设置请求大小限制为30MB (30 * 1024 * 1024)
-axios.defaults.maxContentLength = Infinity;
 axios.defaults.maxBodyLength = Infinity;
+
+// 配置axios以包含CSRF令牌
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+axios.defaults.withCredentials = true;
 
 // 请求拦截器添加token
 axios.interceptors.request.use(config => {
@@ -122,20 +121,27 @@ function App() {
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="flex flex-col min-h-screen">
         
-        <main className="flex-grow container mx-auto max-w-[800px] pt-[20px] pb-[20px]">
+        <main className="flex-grow container mx-auto max-w-[1200px] pt-[20px] pb-[20px]">
           <Routes>
             {/* 公共路由 */}
             <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />} />
             <Route path="/send-code" element={user ? <Navigate to="/" /> : <SendCodePage />} />
             <Route path="/set-password" element={user ? <Navigate to="/" /> : <SetPasswordPage onLogin={handleLogin} />} />
             
-            {/* 首页 - 公开访问，但登录后有更多功能 */}
-            <Route path="/" element={<HomePage user={user} handleLogout={handleLogout} />} />
-            {/*<Route path="/xiaohongshu" element={<XiaohongshuPage/>} />*/}
-            {/* 帖子详情页 - 公开访问 */}
-            <Route path="/posts/:id" element={<PostDetailPage />} />
-             {/* 主题帖详情页 - 公开访问 */}
-            <Route path="/themes/:id" element={<ThemeDetailPage />} />
+            {/* 首页 - 需要登录 */}
+            <Route path="/" element={
+              <PrivateRoute>
+                <HomePage user={user} handleLogout={handleLogout} />
+              </PrivateRoute>
+            } />
+
+
+             {/* 主题帖详情页 - 需要登录 */}
+            <Route path="/themes/:id" element={
+              <PrivateRoute>
+                <ThemeDetailPage />
+              </PrivateRoute>
+            } />
             
             {/* 私有路由 */}
             <Route path="/posts/create" element={
@@ -144,11 +150,6 @@ function App() {
               </PrivateRoute>
             } />
 
-            <Route path="/posts/:id/edit" element={
-              <PrivateRoute>
-                <EditPostPage />
-              </PrivateRoute>
-            } />
             <Route path="/profile" element={
               <PrivateRoute>
                 <ProfilePage user={user} setUser={setUser} onLogout={handleLogout} />

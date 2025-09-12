@@ -1,19 +1,10 @@
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 
-const Header = ({ user, onLogout }) => {
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    if (onLogout) {
-      await onLogout();
-    }
-    navigate('/login');
-  };
+const Header = ({ user }) => {
 
   return (
     <header className="bg-white  fixed top-0 left-0 right-0 z-50">
-      <div className="container mx-auto max-w-[800px] px-4">
+      <div className="container mx-auto max-w-[1200px] px-4">
         <div className="flex justify-between items-center h-16">
           {/* 左侧区域 */}
           <div className="flex items-center">
@@ -30,10 +21,7 @@ const Header = ({ user, onLogout }) => {
               <div className="flex items-center space-x-4">
                 <div className=" md:flex items-center space-x-2">
                   <Link to="/profile" className="text-gray-700 hover:text-blue-600 font-medium">
-                  <span className="text-gray-700">{user.student_id}</span>
-                  {user.name && (
-                    <span className="text-gray-500 text-sm">({user.name})</span>
-                  )}
+                  <span className="text-gray-700">{user.name}</span>                 
                   </Link>
                 </div>
               </div>

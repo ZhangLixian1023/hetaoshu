@@ -14,14 +14,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import permission_classes
 from users.models import User
 from posts.models import Post
-
+from posts.serializers import PostSerializer
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_user_posts(request, user_id):
     """获取指定用户的所有帖子"""
     user = get_object_or_404(User, id=user_id)
-    posts = user.posts.filter(is_active=True).order_by('-created_at')
+    posts= user.posts.filter(is_active=True,parent__isnull=True).order_by('-created_at')
     serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
 

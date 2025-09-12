@@ -27,10 +27,13 @@ class SendVerificationCodeView(APIView):
             user = User.objects.get(student_id=student_id, email=email)
         except User.DoesNotExist:
             # 创建新用户，初始密码为None（未设置）
+            # 设置默认name为学号的后4位
+            default_name = student_id[-4:] if len(student_id) >= 4 else student_id
             user = User.objects.create_user(
                 student_id=student_id,
                 email=email,
-                password=None
+                password=None,
+                name=default_name
             )
         
         # 生成验证码，明确设置expires_at的值
@@ -130,7 +133,6 @@ class LogoutView(APIView):
 class UserDetailView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-    
     def get_object(self):
         return self.request.user
 
