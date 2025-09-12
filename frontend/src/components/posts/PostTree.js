@@ -2,11 +2,9 @@ import { useState, useEffect,useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import LoadingSpinner from '../ui/LoadingSpinner';
 import CommentList from './CommentList';
 import CommentForm from './CommentForm';
 import ImageCarousel from './ImageCarousel';
-import { getThemeConfig } from './themeTypes';
 
 const PostTree = ({theme,postId}) => {
   const navigate = useNavigate();
@@ -99,15 +97,10 @@ const [images, setImages] = useState([]);
     // 判断当前用户是否是帖子作者
   const isAuthor = user && post.author && user.student_id === post.author.student_id;
   // 帖子类型样式 - 使用主题配置字典
-  const themeType = theme.theme_type;
-  const { borderColor, bgColor, label, textColor } = getThemeConfig(themeType);
-  const headerBgColor = bgColor;
-  const typeText = label;
-  const typeColor = textColor;
     return (
     <div className="w-full">
       {/* 帖子标题栏 */}
-      <div className={`${headerBgColor}`}>
+      <div>
         <div className="flex justify-between items-center">
           <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full bg-opacity-20`}>
           </span>

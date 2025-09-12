@@ -2,13 +2,11 @@ import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 const LoginPage = ({ onLogin }) => {
   const [studentId, setStudentId] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -25,7 +23,6 @@ const LoginPage = ({ onLogin }) => {
       return;
     }
 
-    setLoading(true);
     try {
       const response = await axios.post('/users/login/', {
         student_id: studentId,
@@ -39,11 +36,10 @@ const LoginPage = ({ onLogin }) => {
       }
       // 跳转到首页
       navigate('/');
-    } catch (error) {
-      console.error('登录失败:', error);
-      toast.error(error.response?.data?.error || '学号或密码错误，请重新输入');
-    } finally {
-      setLoading(false);
+    } catch  {
+      // 确保停留在登录页面，不进行任何跳转
+      console.errpr('cuo')
+      toast.error('学号或密码错误，请重新输入');
     }
   };
 
@@ -59,9 +55,6 @@ const LoginPage = ({ onLogin }) => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             核桃书 - 登录
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            欢迎回到核桃学院论坛
-          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
@@ -138,17 +131,9 @@ const LoginPage = ({ onLogin }) => {
           <div>
             <button
               type="submit"
-              disabled={loading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              {loading ? (
-                <LoadingSpinner size="sm" />
-              ) : (
-                <span className="flex items-center">
-                  <i className="fa fa-sign-in mr-2"></i>
-                  登录
-                </span>
-              )}
+              登录
             </button>
           </div>
         </form>

@@ -2,7 +2,6 @@ import  { useState, useEffect ,useCallback} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
 import PostCard from '../components/posts/PostCard';
 import './xiaohongshu.css'; // 我们将在同一个文件中包含CSS
 
@@ -90,8 +89,13 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
       // 清除密码表单
       setCurrentPassword('');
       setNewPassword('');
-      // 切换到信息标签页
-      setActiveTab('info');
+      // 延迟导航到登录页面，让用户有时间看到成功提示
+      setTimeout(() => {
+        if (onLogout) {
+          onLogout();
+        }
+        navigate('/login');
+      }, 1500);
     } catch (error) {
       console.error('更新密码失败:', error);
       toast.error(error.response?.data?.error || '更新密码失败，请稍后重试');
@@ -104,7 +108,6 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[50vh]">
         <div className="flex flex-col items-center">
-          <LoadingSpinner size="lg" />
           <p className="mt-4 text-gray-600">加载中...</p>
         </div>
       </div>
@@ -216,7 +219,6 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
                 >
                   {updating ? (
                     <div className="flex items-center">
-                      <LoadingSpinner size="sm" />
                       <span className="ml-2">保存中...</span>
                     </div>
                   ) : (
@@ -294,7 +296,6 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
                 >
                   {updating ? (
                     <div className="flex items-center">
-                      <LoadingSpinner size="sm" />
                       <span className="ml-2">修改中...</span>
                     </div>
                   ) : (

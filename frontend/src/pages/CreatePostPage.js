@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { handleImageChange } from '../components/utils/imageUtils';
 
 /**
@@ -259,7 +258,6 @@ const CreatePostPage = () => {
           >
             {loading ? (
               <div className="flex items-center">
-                <LoadingSpinner size="sm" />
                 <span className="ml-2">发布中...</span>
               </div>
             ) : (

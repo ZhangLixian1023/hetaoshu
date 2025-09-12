@@ -5,7 +5,8 @@ from .views import (
     LoginView,
     LogoutView,
     UserDetailView,
-    UpdateProfileView
+    UpdateProfileView,
+    ChangePasswordView
 )
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -32,6 +33,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/', UserDetailView.as_view(), name='user_profile'),
     path('profile/update/', UpdateProfileView.as_view(), name='update_profile'),
+    path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     # 添加用户帖子路由，格式为 /api/users/{user_id}/posts/
     path('<int:user_id>/posts/', get_user_posts, name='user_posts'),
 ]

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import LoadingSpinner from '../ui/LoadingSpinner';
 import { useState, useEffect } from 'react';
 
 /**
@@ -45,7 +44,7 @@ const CommentList = ({ themeId, onRefresh, onReply }) => {
   const handleDeleteComment = async (commentId) => {
     if (window.confirm('确定要删除这条评论吗？')) {
       try {
-        await axios.delete(`comments/${commentId}/`);
+        await axios.delete(`posts/${commentId}/`);
         fetchCommentTree(); // 重新获取评论树
         toast.success('评论已删除');
       } catch (error) {

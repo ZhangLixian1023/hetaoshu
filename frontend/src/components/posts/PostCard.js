@@ -1,11 +1,5 @@
-import { useRef} from 'react';
 import '../../pages/xiaohongshu.css'
-import { getThemeConfig } from './themeTypes';
-
-import { useNavigate } from 'react-router-dom';
 const PostCard = ({ post}) => {   
-  // 使用主题类型配置获取边框颜色
-  const { borderColor } = getThemeConfig(post.theme.theme_type);
   
   // 获取帖子内容的前20个字符作为摘要
   const getSummary = (content) => {

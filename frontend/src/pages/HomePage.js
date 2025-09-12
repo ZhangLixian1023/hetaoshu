@@ -62,7 +62,7 @@ const HomePage = ({ user, handleLogout }) => {
     <div className="xiaohongshu-feed">
       <div className="feed-columns">
           {posts.map(post => (
-           <a href={`/themes/${post.theme.id}/`}  target='_blank'>
+           <a href={`/themes/${post.theme.id}/`} key={post.id}  target='_blank'>
            <PostCard key={post.id} post={post}/>
            </a>
           ))}

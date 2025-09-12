@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import LoadingSpinner from '../ui/LoadingSpinner';
 
 const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) => {
   const [content, setContent] = useState('');
@@ -91,7 +90,6 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
           >
             {loading ? (
               <div className="flex items-center">
-                <LoadingSpinner size="sm" />
                 <span className="ml-2">发布中...</span>
               </div>
             ) : (

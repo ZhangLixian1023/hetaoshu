@@ -2,7 +2,6 @@ import { useState, useEffect,useCallback } from 'react';
 import { useParams} from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import PostList from '../components/posts/PostList';
 import PostTree from '../components/posts/PostTree';
 
 const ThemeDetailPage = () => {
@@ -35,20 +34,13 @@ const ThemeDetailPage = () => {
   if (loading) {
     return <div>Loading...</div>;
   }
-  if (theme.theme_type === 'discussion') {
-    return (
-      <div className="container w-full">
-        <PostList theme={theme} postId={postId}/>
-      </div>
-    );
-  }
-  else {
+  
     return (
       <div className="container w-full">
         <PostTree theme={theme} postId={postId} />
       </div>
     );
-  }
+  
 };
 
 export default ThemeDetailPage;

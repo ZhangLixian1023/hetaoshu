@@ -149,3 +149,32 @@ class UpdateProfileView(APIView):
             user.save()
             
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        user = request.user
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+        
+        # 验证参数是否完整
+        if not current_password or not new_password:
+            return Response({'error': '请提供当前密码和新密码'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 验证当前密码是否正确
+        if not user.check_password(current_password):
+            return Response({'error': '当前密码错误'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 更新密码
+        user.set_password(new_password)
+        user.save()
+        
+        # 重新生成token（可选，增强安全性）
+        Token.objects.filter(user=user).delete()
+        token, created = Token.objects.get_or_create(user=user)
+        
+        return Response({
+            'message': '密码修改成功',
+            'token': token.key
+        }, status=status.HTTP_200_OK)
