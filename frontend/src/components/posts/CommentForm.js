@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { handleImageChange } from '../utils/imageUtils';
 
 const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState([]);
   const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   console.log('CommentForm: before everything, replyToComment is:',replyToComment);
 
@@ -40,7 +43,7 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
       const commentData = {
         'title':replyToComment.title,
         'content': content,
-        'images': [],
+        'images': images,
         'parent': replyToComment.id
       };
       
@@ -55,6 +58,8 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
       if (onCommentSuccess) {
         onCommentSuccess();
       }
+      // 清空图片
+      setImages([]);
     } catch (error) {
       console.error('发表评论失败:', error);
       toast.error(error.response?.data?.error || '发表评论失败，请稍后重试');
@@ -82,7 +87,60 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
           placeholder={`写下你的评论...`}
         />
         
-        <div className="flex justify-end">
+        {/* 图片预览区域 - 水平排列较小的缩略图 */}
+        {images.length > 0 && (
+          <div className="flex space-x-2 mb-3 overflow-x-auto pb-2">
+            {images.map((image, index) => (
+              <div key={`comment-image-${index}`} className="relative w-16 h-16 flex-shrink-0">
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt={`评论图片 ${index + 1}`}
+                  className="w-full h-full object-cover rounded-md border border-gray-200"
+                />
+                <button
+                  type="button"
+                  className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-full h-5 w-5 flex items-center justify-center hover:bg-opacity-70"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const newImages = [...images];
+                    newImages.splice(index, 1);
+                    setImages(newImages);
+                  }}
+                  title="删除图片"
+                >
+                  <i className="fa fa-times text-xs"></i>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* 操作区：左侧添加图片按钮，右侧发送按钮 */}
+        <div className="flex justify-between items-center">
+          {/* 添加图片按钮 - 小图标样式 */}
+          {images.length < 9 && (
+            <div>
+              <button
+                type="button"
+                className="text-gray-500 hover:text-blue-600 flex items-center text-sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <i className="fa fa-picture-o mr-1"></i>
+                <span>添加图片</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleImageChange(e, setImages)}
+                />
+              </button>
+            </div>
+          )}
+          
+          {/* 发送按钮 */}
+          <div>
           <button
             type="submit"
             disabled={loading}
@@ -96,6 +154,7 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
               <span>发表评论</span>
             )}
           </button>
+        </div>
         </div>
       </form>
     </div>

@@ -111,6 +111,23 @@ const CommentList = ({ themeId, onRefresh, onReply }) => {
             <div className="mt-1 text-sm text-gray-700">
               {comment.content}
             </div>
+            
+            {/* 评论图片缩略图 */}
+            {comment.images && comment.images.length > 0 && (
+              <div className="mt-2 flex space-x-2 overflow-x-auto pb-1">
+                {comment.images.map((image, index) => (
+                  <div key={`comment-image-${comment.id}-${index}`} className="relative w-16 h-16 flex-shrink-0">
+                    <img
+                      src={image.image || image}
+                      alt={`评论图片 ${index + 1}`}
+                      className="w-full h-full object-cover rounded-md border border-gray-200"
+                      onClick={() => window.open(image.image || image, '_blank')}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
