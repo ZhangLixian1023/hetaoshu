@@ -41,5 +41,5 @@ EXPOSE 8000
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["sh","/entrypoint.sh"]
 CMD ["gunicorn", "hetaoshu.wsgi:application", "--bind", "0.0.0.0:8000"]

@@ -105,9 +105,6 @@ env/
 *.sqlite3
 *.db
 
-# Migrations (except for the __init__.py files)
-**/migrations/**
-!**/migrations/__init__.py
 
 # Temporary files
 *.tmp

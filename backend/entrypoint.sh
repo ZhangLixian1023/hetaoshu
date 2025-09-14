@@ -8,7 +8,7 @@ done
 
 
 # 创建 django superuser
-python manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
+python manage.py createsuperuser --noinput --student_id $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
 # 执行数据库迁移
 python manage.py migrate
 
