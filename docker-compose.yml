@@ -32,17 +32,10 @@ services:
       - 8000
 
   frontend:
-    image: node:22-alpine
-    working_dir: /app
+    build: ./frontend
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
-    ports:
-      - "3000:3000"
-    command: sh -c "npm install && npm start"
+      - ./frontend/build:/app/build
+    command: sh -c "npm install && npm run build"
     depends_on:
       - backend
 
@@ -54,6 +47,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - static_volume:/home/app/staticfiles
       - media_volume:/home/app/media
+      - ./frontend/build:/usr/share/nginx/html  # 挂载前端构建文件
     depends_on:
       - backend
       - frontend

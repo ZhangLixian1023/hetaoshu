@@ -38,7 +38,6 @@ const LoginPage = ({ onLogin }) => {
       navigate('/');
     } catch  {
       // 确保停留在登录页面，不进行任何跳转
-      console.errpr('cuo')
       toast.error('学号或密码错误，请重新输入');
     }
   };

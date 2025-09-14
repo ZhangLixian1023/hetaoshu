@@ -6,8 +6,4 @@ dotenv
 gunicorn
 django-filter
 Pillow==10.4.0
-coverage
-pytest
-pytest-django
 mysql-connector-python
-debugpy>=1.6.0,<2.0
