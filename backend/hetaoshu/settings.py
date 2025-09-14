@@ -8,9 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -64,11 +64,11 @@ WSGI_APPLICATION = 'hetaoshu.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'hetaoshu'),
-        'USER': os.getenv('DB_USER', 'root'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', '3306'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
             'charset': 'utf8mb4',
         }
@@ -120,29 +120,18 @@ REST_FRAMEWORK = {
 }
 
 # CORS设置
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
 # 邮件设置
-# 开发环境使用控制台邮件后端（邮件内容会输出到容器日志中）
-# 生产环境可以切换为SMTP后端
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-
-# 控制台后端专用配置
-if EMAIL_BACKEND == 'django.core.mail.backends.console.EmailBackend':
-    # 当使用控制台后端时，不需要SMTP配置
-    # 邮件内容会直接输出到容器的标准输出(stdout)
-    # 可以通过 docker-compose logs backend 查看邮件内容
-    # 以下是默认发件人设置，用于测试
-    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@example.com')
-else:
-    # SMTP配置，仅在非控制台后端时生效
-    EMAIL_HOST = os.getenv('EMAIL_HOST', 'mail.ustc.edu.cn')
-    EMAIL_PORT = int(os.getenv('EMAIL_PORT', '465'))
-    EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True') == 'True'
-    EMAIL_USE_TLS = False
-    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'listen01@mail.ustc.edu.cn')
-    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'somepassword')
-    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'listen01@mail.ustc.edu.cn')
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+# SMTP配置，仅在非控制台后端时生效
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'mail.ustc.edu.cn')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL') 
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 # 文件上传大小限制 (31457280k = 30M)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 31457280  # 30M
