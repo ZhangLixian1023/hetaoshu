@@ -84,7 +84,7 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
           onChange={(e) => setContent(e.target.value)}
           rows={3}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 resize-none"
-          placeholder={`写下你的评论...`}
+          placeholder={`写下你的评论...（点下方按钮可添加图片）`}
         />
         
         {/* 图片预览区域 - 水平排列较小的缩略图 */}

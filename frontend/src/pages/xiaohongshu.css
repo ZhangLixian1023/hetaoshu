@@ -19,6 +19,48 @@
   gap: 5px;
 }
 
+/* 屏幕宽度280px~390px时，每行2个 */
+        @media (min-width: 280px) and (max-width: 389.9px) {
+            .feed-columns {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* 屏幕宽度390px~540px时，每行3个 */
+        @media (min-width: 390px) and (max-width: 539.9px) {
+            .feed-columns {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* 屏幕宽度540px~720px时，每行4个 */
+        @media (min-width: 540px) and (max-width: 719.9px) {
+            .feed-columns {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        /* 屏幕宽度720px~900px时，每行5个 */
+        @media (min-width: 720px) and (max-width: 899.9px) {
+            .feed-columns {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+        
+        /* 屏幕宽度900px~1200px时，每行6个 */
+        @media (min-width: 900px) and (max-width: 1200px) {
+            .feed-columns {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+        
+        /* 超过1200px时，保持最大宽度和每行6个 */
+        @media (min-width: 1200px) {
+            .feed-columns {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
 /* 帖子卡片样式 */
 .post-card {
   background-color: white;
@@ -122,27 +164,4 @@
 .icon-share::before {
   content: '🔗';
   font-size: 14px;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .feed-columns {
-    gap: 12px;
-  }
-  
-  .post-card {
-    border-radius: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .feed-columns {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 10px;
-  }
-  
-  .post-card {
-    width: 180px;
-    height: 280px;
-  }
 }

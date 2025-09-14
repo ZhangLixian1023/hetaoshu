@@ -22,9 +22,9 @@ import CreatePostPage from './pages/CreatePostPage';
 import ProfilePage from './pages/ProfilePage';
 
 // 配置axios - 使用环境变量
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-const ENV = process.env.REACT_APP_ENV || 'development';
-const DEBUG = process.env.REACT_APP_DEBUG === 'true';
+const API_URL = process.env.REACT_APP_API_URL;
+const ENV = process.env.REACT_APP_ENV;
+const DEBUG = process.env.REACT_APP_DEBUG;
 
 // 全局配置
 window.appConfig = {

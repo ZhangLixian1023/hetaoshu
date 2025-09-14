@@ -1,4 +1,4 @@
-# 开发环境Dockerfile
+# 上线环境Dockerfile (注意：此配置在开发环境里不会起效)
 FROM node:22-alpine
 WORKDIR /app
 
@@ -14,6 +14,3 @@ COPY . .
 
 # 暴露端口
 EXPOSE 3000
-
-# 启动开发服务器
-CMD ["npm", "start"]

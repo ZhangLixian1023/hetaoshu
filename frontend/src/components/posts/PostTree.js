@@ -152,7 +152,7 @@ const [images, setImages] = useState([]);
         >
           <div className="flex items-center text-gray-400">
             <i className="fa fa-comment-o mr-2"></i>
-            <span>写下你的评论...</span>
+            <span>写下你的评论...（可添加图片）</span>
           </div>
         </div>
       </div>

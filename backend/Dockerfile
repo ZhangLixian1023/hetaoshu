@@ -1,3 +1,5 @@
+# 仅在构建镜像时执行 即docker compose up --build 包含--build时执行
+# 如果仅使用 docker compose up, 则不会执行此构建
 FROM python:3.11-slim-bookworm
 
 WORKDIR /app

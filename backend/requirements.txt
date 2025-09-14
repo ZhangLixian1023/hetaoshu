@@ -7,3 +7,4 @@ gunicorn
 django-filter
 Pillow==10.4.0
 mysql-connector-python
+debugpy

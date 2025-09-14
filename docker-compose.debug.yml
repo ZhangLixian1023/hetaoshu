@@ -44,13 +44,11 @@ services:
         condition: service_healthy
     expose:
       - 8000
-      - 5678
     ports:
-      - "8000:8000"
       - "5678:5678"
     environment:
       - DEBUG=True
-      - API_URL=http://localhost:8000
+      - API_URL=http://backend:8000
 
   frontend:
     image: node:22-alpine
@@ -61,6 +59,8 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+    expose:
+      - 3000
     ports:
       - "3000:3000"
     command: sh -c "npm install && npm start"

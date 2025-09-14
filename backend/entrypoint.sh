@@ -6,6 +6,9 @@ until python -c "import mysql.connector; mysql.connector.connect(host='$DB_HOST'
   sleep 2
 done
 
+
+# 创建 django superuser
+python manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
 # 执行数据库迁移
 python manage.py migrate
 

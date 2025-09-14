@@ -47,8 +47,8 @@ const LoginPage = ({ onLogin }) => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center">
-            <div className="h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-2xl font-bold">核</span>
+            <div className="h-16 w-16 flex items-center justify-center">
+              <img src="/favicon.ico" alt="Logo" className="h-10 w-10" />
             </div>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -102,20 +102,7 @@ const LoginPage = ({ onLogin }) => {
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="rememberMe"
-                name="rememberMe"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-900">
-                记住我
-              </label>
-            </div>
-            
+                      
             <div>
               <button
                 type="button"
@@ -138,7 +125,7 @@ const LoginPage = ({ onLogin }) => {
         </form>
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            还没有账号？
+            首次使用请先注册：
             <button
               onClick={() => navigate('/send-code')}
               className="ml-1 text-blue-600 hover:text-blue-500 font-medium"

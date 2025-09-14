@@ -54,7 +54,6 @@ build
 .env.development.local
 .env.test.local
 .env.production.local
-.env.example
 
 # Python/Django
 *.py[cod]
@@ -70,10 +69,6 @@ build/
 build/coverage/
 build/htmlcov/
 
-# Docker
-.docker/
-*.dockerfile
-.dockerignore
 
 # OS
 Thumbs.db
