@@ -155,7 +155,6 @@ const [images, setImages] = useState([]);
       <div className="w-full">
       <CommentList 
         themeId={theme.id} 
-        onRefresh={fetchPost} 
         onReply={openReplyModal}
       />
       </div>

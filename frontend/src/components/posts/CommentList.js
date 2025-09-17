@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
  * 递归渲染评论树的组件
  * 使用get_reply_tree接口一次性获取全部评论树
  */
-const CommentList = ({ themeId, onRefresh, onReply }) => {
+const CommentList = ({ themeId,  onReply }) => {
   const [commentTree, setCommentTree] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -30,13 +30,6 @@ const CommentList = ({ themeId, onRefresh, onReply }) => {
     }
     fetchCommentTree();
   },[themeId, fetchCommentTree]);
-
-  // 监听评论刷新事件
-  useEffect(() => {
-    if (onRefresh) {
-      fetchCommentTree();
-    }
-  }, [onRefresh]);
 
 
   // 删除评论

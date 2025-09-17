@@ -33,11 +33,6 @@ window.appConfig = {
   DEBUG
 };
 
-if (DEBUG) {
-  console.log('App running in', ENV, 'environment');
-  console.log('API URL:', API_URL);
-}
-
 axios.defaults.baseURL = API_URL;
 
 // 设置请求大小限制为30MB (30 * 1024 * 1024)
