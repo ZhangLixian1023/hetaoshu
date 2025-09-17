@@ -37,11 +37,11 @@ class SendVerificationCodeView(APIView):
             )
         
         # 生成验证码，明确设置expires_at的值
-        verification_code = VerificationCode.objects.create(user=user, expires_at=timezone.now() + timedelta(minutes=10))
+        verification_code = VerificationCode.objects.create(user=user, expires_at=timezone.now() + timedelta(minutes=60))
         
         # 发送邮件
         subject = '核桃书验证码'
-        message = f'你的验证码是: {verification_code.code}，10分钟内有效。'
+        message = f'你正在通过核桃书像你发送验证码。你的验证码是: {verification_code.code}，60分钟内有效。'
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [email]
         

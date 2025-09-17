@@ -51,13 +51,11 @@ const [images, setImages] = useState([]);
       setPost(response.data);
       const imagesResponse = await axios.get(`/posts/${postId}/images/`);
       setImages(imagesResponse.data);
-      
     } catch (error) {
       console.error('Error fetching post:', error);
       toast.error('加载帖子失败');
     } finally {
       setLoading(false);
-      console.log('PostTree: after fetch, post is:',post);
     }
   },[postId]);
   
@@ -90,9 +88,6 @@ const [images, setImages] = useState([]);
     );
   }
   
-  
- 
-  console.log('PostTree: before return, post is:',post);
   if(post && !loading){
     // 判断当前用户是否是帖子作者
   const isAuthor = user && post.author && user.student_id === post.author.student_id;

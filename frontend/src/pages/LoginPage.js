@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 const LoginPage = ({ onLogin }) => {
   const [studentId, setStudentId] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {

@@ -246,7 +246,7 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
               <div className="xiaohongshu-feed">
       <div className="feed-columns">
           {userPosts.map(post => (
-           <a href={`/themes/${post.theme.id}/`}  target='_blank'>
+           <a href={`/themes/${post.theme.id}/`}  target='_blank' rel='noreferrer'>
            <PostCard key={post.id} post={post}/>
            </a>
           ))}

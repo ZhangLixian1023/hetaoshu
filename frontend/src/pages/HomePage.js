@@ -18,7 +18,6 @@ const HomePage = ({ user, handleLogout }) => {
     setLoading(true);
     try {
       const response = await axios.get(`posts/?page=${page}`);
-      console.log(`get page ${page}, response:`,response.data.results);
       if (page === 1) {
         setPosts(response.data.results);
       } else {
@@ -40,7 +39,7 @@ const HomePage = ({ user, handleLogout }) => {
     if(hasMore){
       loadPosts();
     }
-  }, [page]);
+  }, [page, hasMore, loadPosts]);
   
   // 加载更多帖子的处理函数
   const handleLoadMore = () => {
@@ -62,7 +61,7 @@ const HomePage = ({ user, handleLogout }) => {
     <div className="xiaohongshu-feed">
       <div className="feed-columns">
           {posts.map(post => (
-           <a href={`/themes/${post.theme.id}/`} key={post.id}  target='_blank'>
+           <a href={`/themes/${post.theme.id}/`} key={post.id}  target='_blank' rel='noreferrer'>
            <PostCard key={post.id} post={post}/>
            </a>
           ))}

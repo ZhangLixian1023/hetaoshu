@@ -10,7 +10,6 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  console.log('CommentForm: before everything, replyToComment is:',replyToComment);
 
   // 当组件可见时，自动聚焦到评论框
   useEffect(() => {
@@ -30,7 +29,6 @@ const CommentForm = ({ replyToComment , onCommentSuccess, isVisible = true }) =>
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('CommentForm: before submit, replyToComment is:',replyToComment);
     // 验证表单
     if (!content.trim()) {
       toast.error('请输入评论内容');

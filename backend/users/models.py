@@ -25,17 +25,6 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, student_id, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('超级用户必须设置 is_staff=True')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('超级用户必须设置 is_superuser=True')
-        
-        return self.create_user(student_id, email, password, **extra_fields)
-    
 
 class User(AbstractBaseUser, PermissionsMixin):
     student_id = models.CharField(max_length=20, unique=True, verbose_name='学号')

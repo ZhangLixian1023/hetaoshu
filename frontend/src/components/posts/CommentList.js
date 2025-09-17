@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 /**
  * 递归渲染评论树的组件
@@ -8,9 +8,20 @@ import { useState, useEffect } from 'react';
  */
 const CommentList = ({ themeId, onRefresh, onReply }) => {
   const [commentTree, setCommentTree] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
+  // 一次性获取完整的评论树
+  const fetchCommentTree = useCallback(async () => {
+    try {
+      // 使用新的get_reply_tree接口获取完整评论树
+      const response = await axios.get(`themes/${themeId}/reply_tree/`);
+      setCommentTree(response.data.reply_tree.replies || []);
+    } catch (error) {
+      console.error('获取评论树失败:', error);
+      toast.error('获取评论失败，请稍后重试');
+    } 
+  }, [themeId]);
+  
   useEffect(() => {
     // 获取当前登录用户
     const storedUser = localStorage.getItem('user');
@@ -18,27 +29,15 @@ const CommentList = ({ themeId, onRefresh, onReply }) => {
       setCurrentUser(JSON.parse(storedUser));
     }
     fetchCommentTree();
-  },[themeId]);
+  },[themeId, fetchCommentTree]);
 
   // 监听评论刷新事件
   useEffect(() => {
-    fetchCommentTree();
+    if (onRefresh) {
+      fetchCommentTree();
+    }
   }, [onRefresh]);
 
-  // 一次性获取完整的评论树
-  const fetchCommentTree = async () => {
-    try {
-      setLoading(true);
-      // 使用新的get_reply_tree接口获取完整评论树
-      const response = await axios.get(`themes/${themeId}/reply_tree/`);
-      setCommentTree(response.data.reply_tree.replies || []);
-    } catch (error) {
-      console.error('获取评论树失败:', error);
-      toast.error('获取评论失败，请稍后重试');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // 删除评论
   const handleDeleteComment = async (commentId) => {
