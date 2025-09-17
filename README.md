@@ -32,6 +32,9 @@
 
 - 已安装VSCode和Python扩展
 - 已安装Docker
+- 为了docker下载加速，推荐换源  "registry-mirrors": [
+    "https://docker.xuanyuan.run"
+  ]
 
 ## 开发调试指南
 
@@ -94,11 +97,9 @@ docker compose -f docker-compose.debug.yml up --build -d
 
 ## 注意事项
 
-1. 完成后用以下命令停止并清理容器：
+完成后用以下命令停止并清理容器：
 
 ```bash
 docker-compose -f docker-compose.debug.yml down
 ```
 
-2. 安全注意事项：
-   - 永远不要将包含真实凭证的`.env`文件提交到代码仓库

@@ -7,11 +7,11 @@ until python -c "import mysql.connector; mysql.connector.connect(host='$DB_HOST'
 done
 
 
-# 创建 django superuser
-python manage.py createsuperuser --noinput --student_id $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
 # 执行数据库迁移
 python manage.py migrate
 
+# 创建 django superuser
+python manage.py createsuperuser --noinput --student_id $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL
 # 收集静态文件
 python manage.py collectstatic --noinput
 
