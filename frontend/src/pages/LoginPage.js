@@ -133,10 +133,33 @@ const LoginPage = ({ onLogin }) => {
             </button>
           </p>
         </div>
+        
         <div className="flex items-center justify-center">
-          <a href="https://www.slai.edu.cn" target="_blank" rel="noopener noreferrer" className="ml-1 text-blue-600 hover:text-purple-800 font-medium">
-            <i className="fa fa-university"></i> SLAI官网
+          <a 
+            href="https://github.com/ZhangLixian1023/hetaoshu" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <span className="mr-1 text-sm">项目</span>
+            <i className="fa fa-github text-lg"></i>
           </a>
+          
+          <a href="https://www.slai.edu.cn" target="_blank" rel="noopener noreferrer" className="ml-1 text-blue-600 hover:text-purple-800 font-medium">
+            <i className="fa fa-university"></i><span className="mr-1 text-sm">SLAI官网</span> 
+          </a>
+
+                      <a 
+              href="mailto:250010020@slai.edu.cn?subject=关于核桃书的投诉" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <span className="mr-1 text-sm">投诉</span>
+              <i className="fa fa-envelope-o text-lg"></i>
+            </a>
+
+
         </div>
       </div>
     </div>
