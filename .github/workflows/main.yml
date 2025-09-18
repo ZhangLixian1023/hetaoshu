@@ -13,17 +13,15 @@ jobs:
     - name: check code
       uses: actions/checkout@v4
       
-    - name: config ssh
-      uses: webfactory/ssh-agent@v0.9.0
+    - name: Executing remote SSH commands using SSH key
+      uses: appleboy/ssh-action@v1.0.3
       with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        
-    - name: deploy
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd /root/hetaoshu
-          git pull
-          docker compose down
-          docker compose up --build -d
-        EOF
-    
+          host: ${{ secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /${{ secrets.SSH_USERNAME }}/hetaoshu
+            git pull
+            docker compose down
+            docker compose up --build -d
