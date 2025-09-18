@@ -133,9 +133,9 @@ const LoginPage = ({ onLogin }) => {
             </button>
           </p>
         </div>
-        <div>
-          <a href="https://www.slai.edu.cn" target="_blank" rel="noopener noreferrer" className="ml-1 text-blue-600 hover:text-blue-500 font-medium">
-            SLAI官网
+        <div className="flex items-center justify-center">
+          <a href="https://www.slai.edu.cn" target="_blank" rel="noopener noreferrer" className="ml-1 text-blue-600 hover:text-purple-800 font-medium">
+            <i className="fa fa-university"></i> SLAI官网
           </a>
         </div>
       </div>

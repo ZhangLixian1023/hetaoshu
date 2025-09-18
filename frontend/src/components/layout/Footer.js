@@ -12,7 +12,7 @@ const Footer = () => {
             rel="noopener noreferrer" 
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
-            <span className="mr-1 text-sm">项目地址</span>
+            <span className="mr-1 text-sm">项目</span>
             <i className="fa fa-github text-lg"></i>
           </a>
           
@@ -38,6 +38,7 @@ const Footer = () => {
               className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
             >
               <span className="mr-1 text-sm">投诉</span>
+              <i className="fa fa-envelope-o text-lg"></i>
             </a>
           </div>
         </div>
