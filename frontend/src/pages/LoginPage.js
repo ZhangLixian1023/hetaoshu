@@ -133,6 +133,11 @@ const LoginPage = ({ onLogin }) => {
             </button>
           </p>
         </div>
+        <div>
+          <a href="https://www.slai.edu.cn" target="_blank" rel="noopener noreferrer" className="ml-1 text-blue-600 hover:text-blue-500 font-medium">
+            SLAI官网
+          </a>
+        </div>
       </div>
     </div>
   );
