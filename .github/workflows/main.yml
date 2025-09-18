@@ -1,0 +1,28 @@
+name: Deploy Website
+
+on:
+  push:
+    branches: [ main ] 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: check code
+      uses: actions/checkout@v4
+      
+    - name: config ssh
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+    - name: deploy
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd /root/hetaoshu
+          git pull
+          docker compose down
+          docker compose up --build -d
+        EOF
+    
