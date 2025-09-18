@@ -45,7 +45,7 @@ const SendCodePage = () => {
             核桃书 - 发送验证码
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            输入在SLAI的学号 我们将发送验证码到学号@SLAI邮箱
+            输入在SLAI的学号 将发送验证码到学号@SLAI邮箱
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -65,7 +65,7 @@ const SendCodePage = () => {
                   type="text"
                   required
                   className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md"
-                  placeholder="请输入您的学号"
+                  placeholder="输入您的SLAI学号"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
                 />

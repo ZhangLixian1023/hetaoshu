@@ -71,7 +71,7 @@ const LoginPage = ({ onLogin }) => {
                   type="text"
                   required
                   className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md"
-                  placeholder="请输入您的学号"
+                  placeholder="输入SLAI学号"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
                 />
@@ -92,7 +92,7 @@ const LoginPage = ({ onLogin }) => {
                   type="password"
                   required
                   className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md"
-                  placeholder="请输入您的密码"
+                  placeholder="输入您的密码"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />

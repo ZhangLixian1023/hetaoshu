@@ -74,7 +74,7 @@ const SetPasswordPage = () => {
             核桃书 - 设置密码
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            输入验证码并设置您的新密码
+            输入验证码并设置新密码
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -94,7 +94,7 @@ const SetPasswordPage = () => {
                   type="text"
                   required
                   className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md"
-                  placeholder="您的学号"
+                  placeholder="您的SLAI学号"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
                 />

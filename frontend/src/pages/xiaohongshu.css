@@ -17,38 +17,39 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 5px;
+  width: 100%; 
 }
 
-/* 屏幕宽度280px~390px时，每行2个 */
-        @media (min-width: 280px) and (max-width: 389.9px) {
+/* 屏幕宽度310px~460px时，每行2个 */
+        @media (min-width: 310px) and (max-width: 459.9px) {
             .feed-columns {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
         
-        /* 屏幕宽度390px~540px时，每行3个 */
-        @media (min-width: 390px) and (max-width: 539.9px) {
+        /* 屏幕宽度460px~600px时，每行3个 */
+        @media (min-width: 460px) and (max-width: 599.9px) {
             .feed-columns {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
         
-        /* 屏幕宽度540px~720px时，每行4个 */
-        @media (min-width: 540px) and (max-width: 719.9px) {
+        /* 屏幕宽度600px~800px时，每行4个 */
+        @media (min-width: 600px) and (max-width: 719.9px) {
             .feed-columns {
                 grid-template-columns: repeat(4, 1fr);
             }
         }
         
-        /* 屏幕宽度720px~900px时，每行5个 */
-        @media (min-width: 720px) and (max-width: 899.9px) {
+        /* 屏幕宽度800px~1000px时，每行5个 */
+        @media (min-width: 800px) and (max-width: 999.9px) {
             .feed-columns {
                 grid-template-columns: repeat(5, 1fr);
             }
         }
         
-        /* 屏幕宽度900px~1200px时，每行6个 */
-        @media (min-width: 900px) and (max-width: 1200px) {
+        /* 屏幕宽度1000px~1200px时，每行6个 */
+        @media (min-width: 1000px) and (max-width: 1199.9px) {
             .feed-columns {
                 grid-template-columns: repeat(6, 1fr);
             }
@@ -70,7 +71,11 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
   height: 257px;
-  justify-self: center;
+  justify-self: stretch; /* 让网格项填满整个列宽 */
+  box-sizing: border-box; /* 确保内边距和边框不影响宽度计算 */
+  padding: 0; /* 统一内边距 */
+  margin: 0; /* 移除可能的外边距 */
+  
 }
 
 .post-card:hover {

@@ -29,14 +29,7 @@ const Footer = () => {
           
           {/* 右侧的链接组：投币和投诉 */}
           <div className="flex">
-            <a 
-              href="/payqrcode.jpg" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors mr-2"
-            >
-              <span className="mr-1 text-sm">投币</span>
-            </a>
+            
 
             <a 
               href="mailto:250010020@slai.edu.cn?subject=关于核桃书的投诉" 

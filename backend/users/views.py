@@ -41,7 +41,7 @@ class SendVerificationCodeView(APIView):
         
         # 发送邮件
         subject = '核桃书验证码'
-        message = f'你正在通过核桃书像你发送验证码。你的验证码是: {verification_code.code}，60分钟内有效。'
+        message = f'正在通过核桃书发送验证码。你的验证码是: {verification_code.code}，60分钟内有效。'
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [email]
         
