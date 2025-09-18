@@ -14,6 +14,9 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [activeTab, setActiveTab] = useState('info'); // 'info', 'posts', 'password'
+  
+  // 从localStorage读取用户name的缓存键
+  const USER_NAME_CACHE_KEY = `user_${user?.id}_name`;
 
   // 退出登录
   const handleLogout = async () => {
@@ -34,14 +37,21 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
       toast.error('获取用户帖子失败，请稍后重试');
     }
   }, [user]);
+  
   useEffect(() => {
     // 初始化用户信息
     if (user) {
-      setName(user.name || '');
+      // 优先从localStorage读取缓存的name
+      const cachedName = localStorage.getItem(USER_NAME_CACHE_KEY);
+      if (cachedName) {
+        setName(cachedName);
+      } else {
+        setName(user.name || '');
+      }
       fetchUserPosts();
     }
     setLoading(false);
-  }, [user, fetchUserPosts]);
+  }, [user, fetchUserPosts, USER_NAME_CACHE_KEY]);
 
 
   // 更新用户信息
@@ -59,6 +69,9 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
       if (setUser) {
         setUser(response.data);
       }
+      
+      // 将更新后的name保存到localStorage
+      localStorage.setItem(USER_NAME_CACHE_KEY, name);
     } catch (error) {
       console.error('更新个人信息失败:', error);
       toast.error(error.response?.data?.error || '更新个人信息失败，请稍后重试');

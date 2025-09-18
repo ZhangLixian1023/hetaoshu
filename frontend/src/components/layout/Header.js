@@ -1,6 +1,22 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 const Header = ({ user }) => {
+  const [displayName, setDisplayName] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      // 从localStorage读取缓存的name，如果存在则使用它
+      const USER_NAME_CACHE_KEY = `user_${user.id}_name`;
+      const cachedName = localStorage.getItem(USER_NAME_CACHE_KEY);
+      
+      if (cachedName) {
+        setDisplayName(cachedName);
+      } else {
+        setDisplayName(user.name || '');
+      }
+    }
+  }, [user]);
 
   return (
     <header className="bg-white  fixed top-0 left-0 right-0 z-50">
@@ -21,7 +37,7 @@ const Header = ({ user }) => {
               <div className="flex items-center space-x-4">
                 <div className=" md:flex items-center space-x-2">
                   <Link to="/profile" className="text-gray-700 hover:text-blue-600 font-medium">
-                  <span className="text-gray-700">{user.name}</span>                 
+                    <span className="text-gray-700">{displayName}</span>                  
                   </Link>
                 </div>
               </div>
