@@ -3,7 +3,7 @@
 一个基于Django后端和React前端的网站项目，简单的社区平台。
 
 投币支持：
-![payqrcode](https://github.com/ZhangLixian1023/hetaoshu/blob/main/frontend/public/payqrcode.jpg)
+![image](https://github.com/ZhangLixian1023/hetaoshu/blob/main/frontend/public/payqrcode.jpg)
 
 ## 项目结构
 
