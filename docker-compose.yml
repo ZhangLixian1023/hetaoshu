@@ -18,7 +18,7 @@ services:
 
   backend:
     build: ./backend
-    command: gunicorn hetaoshu.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn hetaoshu.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 60
     volumes:
       - ./backend:/app
       - static_volume:/app/staticfiles

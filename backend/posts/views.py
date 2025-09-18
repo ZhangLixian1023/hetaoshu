@@ -43,7 +43,7 @@ class PostImageViewSet(viewsets.ModelViewSet):
 class PostPagination(PageNumberPagination):
     page_size = 20  # 每页显示20条
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 50
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.filter(is_active=True)
@@ -91,7 +91,6 @@ class PostViewSet(viewsets.ModelViewSet):
         if not instance.is_active:
             return Response({'detail': '帖子不存在或已被删除'}, status=404)
         serializer = PostSerializer(instance)
-        print(serializer.data)
         return Response(serializer.data)
     
     def update(self, request, *args, **kwargs):
@@ -104,7 +103,6 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # 保留的图片ID列表
         keep_image_ids = request.data.getlist('keep_image_ids[]')
-        print(keep_image_ids)
         # 删除不需要保留的图片
         PostImage.objects.filter(post=post).exclude(id__in=keep_image_ids).delete()
         # 添加新图片
