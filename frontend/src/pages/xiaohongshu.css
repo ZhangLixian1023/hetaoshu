@@ -64,12 +64,12 @@
 /* 帖子卡片样式 */
 .post-card {
   background-color: white;
-  border-radius: 12px;
+  border-radius: 2px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
-  height: 280px;
+  height: 257px;
   justify-self: center;
 }
 
@@ -82,6 +82,9 @@
 .post-image-container {
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height:60%
 }
@@ -89,7 +92,7 @@
 .post-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
   transition: transform 0.3s ease;
 }

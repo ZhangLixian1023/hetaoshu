@@ -8,9 +8,9 @@ import { toast } from 'react-toastify';
  * @param {number} maxImages - 最大允许上传的图片数量
  */
 export const handleImageChange = (e, setImages, existingImages = []) => {
-  const maxImages = 10;
+  const maxImages = 60;
   const selectedImages = Array.from(e.target.files);
-  const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB
+  const MAX_FILE_SIZE = 60 * 1024 * 1024; // 60MB
   
   // 限制最多上传图片数量
   if (selectedImages.length + existingImages.length > maxImages) {
@@ -18,10 +18,10 @@ export const handleImageChange = (e, setImages, existingImages = []) => {
     return;
   }
   
-  // 检查是否有图片超过30MB
+  // 检查是否有图片超过60MB
   for (let i = 0; i < selectedImages.length; i++) {
     if (selectedImages[i].size > MAX_FILE_SIZE) {
-      toast.error(`第${i+1}张图片超过30MB大小限制`);
+      toast.error(`第${i+1}张图片超过60MB大小限制`);
       return;
     }
   }

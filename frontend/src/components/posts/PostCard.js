@@ -1,7 +1,7 @@
 import '../../pages/xiaohongshu.css'
 const PostCard = ({ post}) => {   
   
-  // 获取帖子内容的前20个字符作为摘要
+  // 获取帖子内容的前100个字符作为摘要
   const getSummary = (content) => {
     return content ? content.substring(0, 100) : '';
   };

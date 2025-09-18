@@ -162,9 +162,9 @@ const CommentList = ({ themeId,  onReply }) => {
   }
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 pl-2 pr-1">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-gray-900">共 {totalComments} 条评论</h3>
+        <h3 className="text-lg font-medium text-gray-900">共 {totalComments} 条评论和回复</h3>
       </div>
       
       <div className="space-y-4">

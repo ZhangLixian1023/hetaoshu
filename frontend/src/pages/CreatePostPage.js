@@ -114,16 +114,10 @@ const CreatePostPage = () => {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-4 bg-gray-50 min-h-screen">
+    <div className="container mx-auto px-1 py-1 bg-gray-50 min-h-screen">
       <div className="max-w-3xl mx-auto">
         {/* 页面标题 */}
         <div className="bg-white px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-          <button 
-            onClick={() => navigate(-1)}
-            className="text-gray-500"
-          >
-            取消
-          </button>
           <h1 className="text-lg font-medium text-gray-900">发布新帖子</h1>
           <span className="w-10"></span> {/* 占位元素，保持标题居中 */}
         </div>
@@ -132,7 +126,7 @@ const CreatePostPage = () => {
           {/* 图片上传与预览区 - 置顶 */}
           <div className="p-4 border-b border-gray-200">
             {/* 添加图片按钮 - 单独一行 */}
-            {images.length < 9 && (
+            {images.length < 60 && (
               <div 
                 className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 mb-3"
                 onClick={() => fileInputRef.current?.click()}
@@ -221,7 +215,7 @@ const CreatePostPage = () => {
                 ))}
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-2">最多上传9张图片（点击图片后再点击蓝线可移到该处）</p>
+            <p className="text-xs text-gray-400 mt-2">最多上传60张图片，图片总大小不超过60M（点击图片后再点击蓝线可移到该处）</p>
           </div>
           
           {/* 标题输入区 */}
@@ -254,7 +248,7 @@ const CreatePostPage = () => {
             type="submit"
             onClick={handleSubmit}
             disabled={loading || !title.trim() || !content.trim()}
-            className={`px-8 py-2 rounded-full text-sm font-medium transition-colors ${loading || !title.trim() || !content.trim() ? 'bg-gray-300 text-white cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'}`}
+            className={`px-8 py-2 rounded-full text-sm font-medium transition-colors ${loading || !title.trim() || !content.trim() ? 'bg-gray-300 text-white cursor-not-allowed' : 'bg-purple-400 text-white hover:bg-purple-500'}`}
           >
             {loading ? (
               <div className="flex items-center">

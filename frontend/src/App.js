@@ -35,8 +35,8 @@ window.appConfig = {
 
 axios.defaults.baseURL = API_URL;
 
-// 设置请求大小限制为30MB (30 * 1024 * 1024)
-axios.defaults.maxBodyLength = Infinity;
+// 设置请求大小限制为60MB (60 * 1024 * 1024)
+axios.defaults.maxBodyLength =60 * 1024 * 1024;
 
 // 配置axios以包含CSRF令牌
 axios.defaults.xsrfCookieName = 'csrftoken';
