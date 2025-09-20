@@ -100,12 +100,15 @@ class PostSerializer(serializers.ModelSerializer):
     image_count = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()
     first_image = serializers.SerializerMethodField()  # 新增：返回第一张图片
-    
+    parent_content = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'author', 'created_at', 'updated_at', 'image_count', 'comment_count', 'first_image', 'theme','parent')
+        fields = ('id', 'title', 'content', 'author', 'created_at', 'updated_at', 'image_count', 'comment_count', 'first_image', 'theme','parent','parent_content')
         read_only_fields = ('id', 'author', 'created_at', 'updated_at', 'image_count', 'comment_count', 'first_image') 
-    
+    def get_parent_content(self, obj):
+        if obj.parent:
+            return obj.parent.content
+        return None
     def get_image_count(self, obj):
         return obj.images.count()
     

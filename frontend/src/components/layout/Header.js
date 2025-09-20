@@ -22,12 +22,12 @@ const Header = ({ user }) => {
 
       // 请求用户没有读到的回复的列表
       if(user){
-        axios.get('/messages/?since='+user.last_visit).then(res => {
-            setUnreadCount(res.data.count);
-            setMessages(res.data.results);
+        axios.get('/messages/').then(res => {
+            setUnreadCount(res.data.length);
+            setMessages(res.data);
           
         }).catch(err => {
-          console.error('获取未读消息失败:', err);
+          console.error('获取消息失败:', err);
         });
       }
     }
@@ -56,8 +56,8 @@ const Header = ({ user }) => {
                   </Link>
                   { (
                     <Link to="/messages" state={{messages:messages}} className="text-gray-700 hover:text-blue-600 font-medium">
-                      <i className="fa fa-envelope text-xl"></i>
-                      <span className="ml-1 text-xs text-red-500">({unreadCount})</span>
+                      <i className="fa fa-envelope text-m"></i>
+                      <span className="ml-1 text-m text-red-500">({unreadCount})</span>
                     </Link>
                   )}
                 </div>

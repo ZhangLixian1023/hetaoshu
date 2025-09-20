@@ -132,8 +132,6 @@ class LoginView(APIView):
             if user:
                 # 更新用户的最后登录时间
                 data=UserSerializer(user).data
-                data['last_login']=user.last_login
-                user.last_login = timezone.now()
                 user.save(update_fields=['last_login'])
                 token, created = Token.objects.get_or_create(user=user)
                 return Response({
@@ -141,7 +139,7 @@ class LoginView(APIView):
                     'user': data
                 }, status=status.HTTP_200_OK)
             else:
-                return Response({'error': '学号或密码错误'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'error': '学号或密码错误'}, status=status.HTTP_403_FORBIDDEN)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(APIView):

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useNavigate ,Link} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import PostCard from '../components/posts/PostCard';
 import './xiaohongshu.css'; // 我们将在同一个文件中包含CSS
@@ -60,9 +61,9 @@ const HomePage = ({ user, handleLogout }) => {
     <div className="xiaohongshu-feed">
       <div className="feed-columns">
           {themes.map(theme => (
-           <a href={`/themes/${theme.id}/`} key={theme.id}  target='_blank' rel='noreferrer'>
+           <Link to={`/themes/${theme.id}/`} key={theme.id} >
            <PostCard key={theme.id} theme={theme}/>
-           </a>
+           </Link>
           ))}
       </div>
     </div>

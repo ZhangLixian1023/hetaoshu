@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from users.models import User
 from .models import Post, PostImage, Theme
 from .serializers import (
@@ -81,46 +82,21 @@ class PostViewSet(viewsets.ModelViewSet):
         # 返回分页后的响应，包含results和next字段
         return paginator.get_paginated_response(serializer.data)
     def get_messages(self, request):
-        """获取用户未读消息
+        """获取用户消息
         筛选条件：post的parent的author是当前用户，且创建时间在last_visit之后
         """
         user = request.user
-        last_visit = request.GET.get('since')
-        
+        last_login=user.last_login
+        now = timezone.now()
+        if now-last_login > timezone.timedelta(seconds=600):
+            user.last_login = now
+            user.save(update_fields=['last_login'])
         # 构建查询：筛选出满足条件的帖子
         messages = Post.objects.filter(
             parent__author=user,  # 父帖子的作者是当前用户
             is_active=True        # 帖子是有效的
-        )
-        
-        # 如果提供了last_visit参数，则添加时间筛选条件
-        if last_visit:
-            try:
-                from django.utils import timezone
-                import datetime
-                # 将last_visit字符串转换为datetime对象
-                # 支持常见的ISO格式和日期字符串
-                if isinstance(last_visit, str):
-                    # 尝试多种常见的日期格式
-                    formats = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
-                    parsed_date = None
-                    for fmt in formats:
-                        try:
-                            parsed_date = datetime.datetime.strptime(last_visit, fmt)
-                            if fmt.endswith('Z'):
-                                # 处理带Z时区的时间格式
-                                from django.utils.timezone import make_aware
-                                parsed_date = make_aware(parsed_date)
-                            break
-                        except ValueError:
-                            continue
-                    
-                    if parsed_date:
-                        messages = messages.filter(created_at__gt=parsed_date)
-            except Exception:
-                # 如果日期解析失败，忽略该条件
-                pass
-        
+        ).exclude(author=user)
+        messages = messages.filter(created_at__gt=last_login)
         # 按创建时间降序排列
         messages = messages.order_by('-created_at')
         

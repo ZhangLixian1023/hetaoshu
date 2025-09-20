@@ -86,8 +86,7 @@ function App() {
     
     if (storedUser && token) {
       const userData = JSON.parse(storedUser);
-      userData.last_visit = userData.this_visit ? userData.this_visit : userData.last_login?userData.last_login:userData.date_joined;
-      userData.this_visit = Date.now();
+      // 更新状态和本地存储
       setUser(userData);
     }
     setLoading(false);
@@ -124,7 +123,7 @@ function App() {
         <main className="flex-grow container mx-auto max-w-[1200px] pt-[20px] pb-[20px]">
           <Routes>
             {/* 公共路由 */}
-            <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />} />
+            <Route path="/login" element={ <LoginPage onLogin={handleLogin} />} />
             <Route path="/send-code" element={user ? <Navigate to="/" /> : <SendCodePage />} />
             <Route path="/set-password" element={user ? <Navigate to="/" /> : <SetPasswordPage onLogin={handleLogin} />} />
             

@@ -60,7 +60,7 @@ const CommentList = ({ themeId,  onReply }) => {
         <div className="flex items-start">
           {/* 评论内容 */}
           <div className="flex-1">
-            <div className="flex items-center justify-between">
+            <div  id={comment.id} className="flex items-center justify-between">
               <div className="flex items-center space-x-1">
                 <span className="text-sm font-medium text-gray-900">
                   {comment.author.name || comment.author.student_id}

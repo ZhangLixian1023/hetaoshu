@@ -75,7 +75,6 @@ const LoginPage = ({ onLogin }) => {
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <input type="hidden" name="remember" value="true" />
           <div className="rounded-md -space-y-px">
             <div>
               <label htmlFor="studentId" className="sr-only">

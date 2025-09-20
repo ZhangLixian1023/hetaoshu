@@ -97,9 +97,7 @@ const [images, setImages] = useState([]);
       {/* 帖子标题栏 */}
       <div>
         <div className="flex justify-between items-center">
-          <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full bg-opacity-20`}>
-          </span>
-          
+          <Link to="/" className="mt-4 inline-block text-blue-600">返回首页</Link>
           {/* 作者操作按钮 */}
           {isAuthor && (
             <div className="flex space-x-2 mr-2">

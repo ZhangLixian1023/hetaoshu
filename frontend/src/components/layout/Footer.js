@@ -33,7 +33,6 @@ const Footer = () => {
 
             <a 
               href="mailto:250010020@slai.edu.cn?subject=关于核桃书的投诉" 
-              target="_blank" 
               rel="noopener noreferrer" 
               className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
             >
