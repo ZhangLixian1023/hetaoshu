@@ -135,3 +135,7 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 # 文件上传大小限制 (62914560k = 60M)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 62914560  # 60M
 FILE_UPLOAD_MAX_MEMORY_SIZE = 62914560  # 60M
+
+# RSA密钥路径配置
+RSA_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'backend', 'keys', 'public.pem')
+RSA_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'backend', 'keys', 'private.pem')

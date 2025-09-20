@@ -1,13 +1,28 @@
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-
+import jsencrypt from 'jsencrypt';
 const LoginPage = ({ onLogin }) => {
   const [studentId, setStudentId] = useState('');
   const [password, setPassword] = useState('');
+  const [publicKey, setPublicKey] = useState('');
   const navigate = useNavigate();
 
+  // 加载页面时从服务器获取公钥
+  useEffect(() => {
+    async function fetchPublicKey() {
+      try {
+        const response = await axios.get('/users/public-key/');
+        setPublicKey(response.data.public_key);
+      } catch (error) {
+        console.error('获取公钥失败:', error);
+        toast.error('获取公钥失败，请稍后重试');
+        return null;
+      }
+    }
+    fetchPublicKey();
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -23,9 +38,21 @@ const LoginPage = ({ onLogin }) => {
     }
 
     try {
+      // 1. 获取公钥
+      if (!publicKey) {
+        toast.error('获取公钥失败，请稍后重试');
+        return;
+      }
+      
+      // 2. 使用 JSEncrypt 进行 RSA 加密
+      const encrypt = new jsencrypt.JSEncrypt();
+      encrypt.setPublicKey(publicKey);
+      const encryptedPassword = encrypt.encrypt(password);
+      
+      // 3. 发送加密后的密码到登录接口
       const response = await axios.post('/users/login/', {
         student_id: studentId,
-        password: password
+        password: encryptedPassword
       });
       
       toast.success('登录成功');
@@ -35,9 +62,13 @@ const LoginPage = ({ onLogin }) => {
       }
       // 跳转到首页
       navigate('/');
-    } catch  {
-      // 确保停留在登录页面，不进行任何跳转
-      toast.error('学号或密码错误，请重新输入');
+    } catch (error) {
+      if (error.response?.status === 401) {
+        toast.error('学号或密码错误，请重新输入');
+      } else {
+        toast.error('登录失败，请稍后再试');
+        console.error('登录错误:', error);
+      }
     }
   };
 

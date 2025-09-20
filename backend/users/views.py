@@ -7,9 +7,27 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from .models import User, VerificationCode
-from .serializers import UserSerializer, LoginSerializer, VerificationCodeSerializer
+from .serializers import UserSerializer, LoginSerializer, VerificationCodeSerializer,ChangePasswordSerializer
 from django.core.mail import send_mail
 from django.conf import settings
+import rsa
+import base64
+
+def get_public_key(request):
+    """提供公钥给前端"""
+    if request.method == 'GET':
+        try:
+            with open(settings.RSA_PUBLIC_KEY_PATH, 'rb') as f:
+                public_key = f.read().decode('utf-8')
+            return Response({
+                'publicKey': public_key
+            },status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error':f'获取公钥失败: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response({'error': '方法不允许'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 class SendVerificationCodeView(APIView):
     permission_classes = [AllowAny]
@@ -28,7 +46,7 @@ class SendVerificationCodeView(APIView):
         except User.DoesNotExist:
             # 创建新用户，初始密码为None（未设置）
             # 设置默认name为学号的后4位
-            default_name = student_id[-4:] if len(student_id) >= 4 else student_id
+            default_name = student_id[-4:]
             user = User.objects.create_user(
                 student_id=student_id,
                 email=email,
@@ -59,17 +77,14 @@ class VerifyCodeAndSetPasswordView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        student_id = request.data.get('student_id')
-        code = request.data.get('code')
-        password = request.data.get('password')
-        
-        if not all([student_id, code, password]):
-            return Response({'error': '请提供学号、验证码和密码'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        email = f"{student_id}@slai.edu.cn"
-        
+        serializer=VerificationCodeSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        student_id = serializer.validated_data['student_id']
+        code = serializer.validated_data['code']
+        password = serializer.validated_data['password']
         try:
-            user = User.objects.get(student_id=student_id, email=email)
+            user = User.objects.get(student_id=student_id)
         except User.DoesNotExist:
             return Response({'error': '用户不存在'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -154,27 +169,26 @@ class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
     
     def put(self, request):
-        user = request.user
-        current_password = request.data.get('current_password')
-        new_password = request.data.get('new_password')
+        serializer=ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user=request.user
+            current_password=serializer.validated_data['current_password']
+            new_password=serializer.validated_data['new_password']
+            # 验证当前密码是否正确
+            if not user.check_password(current_password):
+                return Response({'error': '当前密码错误'}, status=status.HTTP_400_BAD_REQUEST)
+            # 更新密码
+            user.set_password(new_password)
+            user.save()
+             # 重新生成token（可选，增强安全性）
+            Token.objects.filter(user=user).delete()
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'message': '密码修改成功',
+                'token': token.key,
+                'user': UserSerializer(user).data
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+     
         
-        # 验证参数是否完整
-        if not current_password or not new_password:
-            return Response({'error': '请提供当前密码和新密码'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # 验证当前密码是否正确
-        if not user.check_password(current_password):
-            return Response({'error': '当前密码错误'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # 更新密码
-        user.set_password(new_password)
-        user.save()
-        
-        # 重新生成token（可选，增强安全性）
-        Token.objects.filter(user=user).delete()
-        token, created = Token.objects.get_or_create(user=user)
-        
-        return Response({
-            'message': '密码修改成功',
-            'token': token.key
-        }, status=status.HTTP_200_OK)
+       

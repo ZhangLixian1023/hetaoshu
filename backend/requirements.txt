@@ -3,6 +3,7 @@ djangorestframework
 mysqlclient
 django-cors-headers
 dotenv
+rsa==4.9
 gunicorn
 django-filter
 Pillow==10.4.0

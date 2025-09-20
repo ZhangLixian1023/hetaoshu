@@ -13,6 +13,7 @@ python manage.py migrate
 # 收集静态文件
 python manage.py collectstatic --noinput
 
+python generate_rsa_keys.py
 
 # 启动主应用程序
 exec "$@"

@@ -15,6 +15,13 @@ const SendCodePage = () => {
       toast.error('请输入学号');
       return;
     }
+    
+    // 验证学号是否在有效范围内 (250010001-250010240)
+    const studentIdNum = parseInt(studentId, 10);
+    if (isNaN(studentIdNum) || studentIdNum < 250010001 || studentIdNum > 250010240) {
+      toast.error('请输入有效的SLAI学号（250010001-250010240）');
+      return;
+    }
 
     setLoading(true);
     try {
