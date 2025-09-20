@@ -70,7 +70,7 @@ const [images, setImages] = useState([]);
     }
     
     try {
-      await axios.delete(`/posts/${post.id}/`);
+      await axios.delete(`/themes/${theme.id}/`);
       toast.success('帖子已删除');
       navigate('/');
     } catch (error) {

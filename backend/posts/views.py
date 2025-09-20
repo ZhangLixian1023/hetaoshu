@@ -87,6 +87,9 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         user = request.user
         last_login=user.last_login
+        # 设为5天前
+        if not last_login:
+            last_login = timezone.datetime.now(timezone.utc) - timezone.timedelta(days=5)
         now = timezone.now()
         if now-last_login > timezone.timedelta(seconds=600):
             user.last_login = now
