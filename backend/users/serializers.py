@@ -34,28 +34,38 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('密码解密失败')
         return data
 
-class VerificationCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = VerificationCode
-        fields = ('id', 'code', 'created_at', 'expires_at', 'is_used')
-        read_only_fields = ('id', 'code', 'created_at', 'expires_at', 'is_used')
+class VerificationCodeSerializer(serializers.Serializer):
+    student_id = serializers.CharField(required=True)
+    code = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
+    
     def validate(self, data):
         student_id = data.get('student_id')
-        code = data.get('code')
-        password = data.get('password')
-        if not all([student_id, code, password]):
+        encrypted_code = data.get('code')
+        encrypted_password = data.get('password')
+        
+        if not all([student_id, encrypted_code, encrypted_password]):
             raise serializers.ValidationError('请提供学号、验证码和密码')
+        
         try:
             with open(settings.RSA_PRIVATE_KEY_PATH, 'rb') as f:
                 private_key = rsa.PrivateKey.load_pkcs1(f.read())
-            encrypted_code = base64.b64decode(code)
-            decrypted_code = rsa.decrypt(encrypted_code, private_key).decode('utf-8')
-            encrypted_password = base64.b64encode(password)
-            decrypted_password = rsa.decrypt(encrypted_password, private_key).decode('utf-8')
+            
+            # 解密验证码
+            code_bytes = base64.b64decode(encrypted_code)
+            decrypted_code = rsa.decrypt(code_bytes, private_key).decode('utf-8')
+            
+            # 解密密码
+            password_bytes = base64.b64decode(encrypted_password)
+            decrypted_password = rsa.decrypt(password_bytes, private_key).decode('utf-8')
+            
             data['code'] = decrypted_code
             data['password'] = decrypted_password
+            data['student_id'] = student_id
+            
         except Exception as e:
-            raise serializers.ValidationError('验证码或密码解密失败')
+            raise serializers.ValidationError(f'验证码或密码解密失败: {str(e)}')
+        
         return data
 
 

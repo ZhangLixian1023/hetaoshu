@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { usePublicKey, encryptWithPublicKey } from '../components/utils/encryptionUtils';
 
 const SetPasswordPage = () => {
   const [studentId, setStudentId] = useState('');
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const { publicKey } = usePublicKey();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,12 +38,28 @@ const SetPasswordPage = () => {
     }
 
     setLoading(true);
-    try {
-      const response = await axios.post('/users/set-password/', {
-        student_id: studentId,
-        code: code,
-        password: password
-      });
+      try {
+        // 获取公钥
+        if (!publicKey) {
+          toast.error('获取公钥失败，请稍后重试');
+          setLoading(false);
+          return;
+        }
+        
+        // 使用JSEncrypt进行RSA加密
+        const encryptedPassword = encryptWithPublicKey(password, publicKey);
+        const encryptedCode = encryptWithPublicKey(code, publicKey);
+        if (!encryptedPassword) {
+          toast.error('密码加密失败，请稍后重试');
+          setLoading(false);
+          return;
+        }
+        
+        const response = await axios.post('/users/set-password/', {
+          student_id: studentId,
+          code: encryptedCode,
+          password: encryptedPassword
+        });
       
       toast.success(response.data.message);
       // 清除临时保存的学号

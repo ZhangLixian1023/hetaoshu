@@ -10,23 +10,25 @@ from .models import User, VerificationCode
 from .serializers import UserSerializer, LoginSerializer, VerificationCodeSerializer,ChangePasswordSerializer
 from django.core.mail import send_mail
 from django.conf import settings
-import rsa
-import base64
 
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def get_public_key(request):
     """提供公钥给前端"""
-    if request.method == 'GET':
-        try:
-            with open(settings.RSA_PUBLIC_KEY_PATH, 'rb') as f:
-                public_key = f.read().decode('utf-8')
-            return Response({
-                'publicKey': public_key
-            },status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({
-                'error':f'获取公钥失败: {str(e)}'
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    return Response({'error': '方法不允许'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    try:
+        with open(settings.RSA_PUBLIC_KEY_PATH, 'rb') as f:
+            public_key = f.read().decode('utf-8')
+        return Response({
+            'publicKey': public_key
+        },status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({
+            'error':f'获取公钥失败: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class SendVerificationCodeView(APIView):
@@ -46,7 +48,7 @@ class SendVerificationCodeView(APIView):
         except User.DoesNotExist:
             # 创建新用户，初始密码为None（未设置）
             # 设置默认name为学号的后4位
-            default_name = student_id[-4:]
+            default_name = student_id[-3:]
             user = User.objects.create_user(
                 student_id=student_id,
                 email=email,

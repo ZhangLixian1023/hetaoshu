@@ -8,6 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+# keys
+/keys/
+*.pem
+
 # Runtime data
 pids
 *.pid

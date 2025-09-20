@@ -5,7 +5,8 @@ import os
 public_key, private_key = rsa.newkeys(2048)
 
 # 确保密钥存储目录存在
-key_dir = os.path.join(BASE_DIR, 'backend', 'keys')
+
+key_dir = 'keys'
 if not os.path.exists(key_dir):
     os.makedirs(key_dir)
 

@@ -6,7 +6,8 @@ from .views import (
     LogoutView,
     UserDetailView,
     UpdateProfileView,
-    ChangePasswordView
+    ChangePasswordView,
+    get_public_key,
 )
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -36,5 +37,5 @@ urlpatterns = [
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     # 添加用户帖子路由，格式为 /api/users/{user_id}/posts/
     path('<int:user_id>/posts/', get_user_posts, name='user_posts'),
-    path('public-key/', views.get_public_key, name='get_public_key'),
+    path('public-key/', get_public_key, name='get_public_key'),
 ]

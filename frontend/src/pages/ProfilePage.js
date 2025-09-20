@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import PostCard from '../components/posts/PostCard';
 import './xiaohongshu.css'; // 我们将在同一个文件中包含CSS
-
+import { usePublicKey, encryptWithPublicKey } from '../components/utils/encryptionUtils';
 const ProfilePage = ({ user, setUser, onLogout }) => {
+  const { publicKey, loading: keyLoading } = usePublicKey();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -90,12 +91,37 @@ const ProfilePage = ({ user, setUser, onLogout }) => {
       return;
     }
     
+    if (!newPassword) {
+      toast.error('请输入新密码');
+      return;
+    }
     
+    // 1. 获取公钥
+    if (keyLoading) {
+      toast.error('公钥正在加载中，请稍候');
+      return;
+    }
+    
+    if (!publicKey) {
+      toast.error('获取公钥失败，请稍后重试');
+      return;
+    }
+    
+    // 2. 使用 JSEncrypt 进行 RSA 加密
+    const encryptedPassword = encryptWithPublicKey(currentPassword, publicKey);
+    const encryptedNewPassword = encryptWithPublicKey(newPassword, publicKey);
+    
+    if (!encryptedPassword || !encryptedNewPassword) {
+      toast.error('密码加密失败，请稍后重试');
+      console.error('加密失败详情:', { encryptedPassword, encryptedNewPassword, publicKey: !!publicKey });
+      return;
+    }
+
     setUpdating(true);
     try {
       await axios.put('/users/change-password/', {
-        current_password: currentPassword,
-        new_password: newPassword
+        current_password: encryptedPassword,
+        new_password: encryptedNewPassword
       });
       
       toast.success('密码更新成功，请重新登录');

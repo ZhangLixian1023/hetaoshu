@@ -72,7 +72,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/debug.conf.d:/etc/nginx/conf.d
       - static_volume:/home/app/staticfiles
       - media_volume:/home/app/media
     depends_on:

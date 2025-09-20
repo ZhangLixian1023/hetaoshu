@@ -137,5 +137,5 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 62914560  # 60M
 FILE_UPLOAD_MAX_MEMORY_SIZE = 62914560  # 60M
 
 # RSA密钥路径配置
-RSA_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'backend', 'keys', 'public.pem')
-RSA_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'backend', 'keys', 'private.pem')
+RSA_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'keys', 'public.pem')
+RSA_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'keys', 'private.pem')
