@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Header = ({ user }) => {
+
   const [displayName, setDisplayName] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     if (user) {
@@ -14,6 +18,17 @@ const Header = ({ user }) => {
         setDisplayName(cachedName);
       } else {
         setDisplayName(user.name || '');
+      }
+
+      // 请求用户没有读到的回复的列表
+      if(user){
+        axios.get('/messages/?since='+user.last_visit).then(res => {
+            setUnreadCount(res.data.count);
+            setMessages(res.data.results);
+          
+        }).catch(err => {
+          console.error('获取未读消息失败:', err);
+        });
       }
     }
   }, [user]);
@@ -37,8 +52,14 @@ const Header = ({ user }) => {
               <div className="flex items-center space-x-4">
                 <div className=" md:flex items-center space-x-2">
                   <Link to="/profile" className="text-gray-700 hover:text-blue-600 font-medium">
-                    <span className="text-gray-700">{displayName}</span>                  
+                    <span className="text-gray-700">{displayName}</span>
                   </Link>
+                  { (
+                    <Link to="/messages" state={{messages:messages}} className="text-gray-700 hover:text-blue-600 font-medium">
+                      <i className="fa fa-envelope text-xl"></i>
+                      <span className="ml-1 text-xs text-red-500">({unreadCount})</span>
+                    </Link>
+                  )}
                 </div>
               </div>
             ) : (

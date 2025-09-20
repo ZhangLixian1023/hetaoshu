@@ -3,9 +3,6 @@ from django.conf import settings
 import uuid
 from django.utils import timezone
 
-
-
-
 class Theme(models.Model):
     THEME_TYPES = (
         ('share', '分享'),

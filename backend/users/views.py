@@ -130,10 +130,15 @@ class LoginView(APIView):
             user = authenticate(request, username=student_id, password=password)
             
             if user:
+                # 更新用户的最后登录时间
+                data=UserSerializer(user).data
+                data['last_login']=user.last_login
+                user.last_login = timezone.now()
+                user.save(update_fields=['last_login'])
                 token, created = Token.objects.get_or_create(user=user)
                 return Response({
                     'token': token.key,
-                    'user': UserSerializer(user).data
+                    'user': data
                 }, status=status.HTTP_200_OK)
             else:
                 return Response({'error': '学号或密码错误'}, status=status.HTTP_401_UNAUTHORIZED)

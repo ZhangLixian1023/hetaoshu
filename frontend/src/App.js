@@ -21,6 +21,9 @@ import CreatePostPage from './pages/CreatePostPage';
 // 个人组件
 import ProfilePage from './pages/ProfilePage';
 
+// 消息组件
+import MessagePage from './components/posts/MessagePage';
+
 // 配置axios - 使用环境变量
 const API_URL = process.env.REACT_APP_API_URL;
 const ENV = process.env.REACT_APP_ENV;
@@ -82,9 +85,11 @@ function App() {
     const token = localStorage.getItem('token');
     
     if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+      const userData = JSON.parse(storedUser);
+      userData.last_visit = userData.this_visit ? userData.this_visit : userData.last_login?userData.last_login:userData.date_joined;
+      userData.this_visit = Date.now();
+      setUser(userData);
     }
-    
     setLoading(false);
   }, []);
 
@@ -144,7 +149,11 @@ function App() {
                 <CreatePostPage />
               </PrivateRoute>
             } />
-
+            <Route path="/messages"  element={
+              <PrivateRoute>
+                <MessagePage/>
+              </PrivateRoute>
+            } />
             <Route path="/profile" element={
               <PrivateRoute>
                 <ProfilePage user={user} setUser={setUser} onLogout={handleLogout} />

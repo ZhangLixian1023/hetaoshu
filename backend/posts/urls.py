@@ -12,4 +12,5 @@ urlpatterns = [path('', include(router.urls)),
     path('posts/<uuid:pk>/comments/', PostViewSet.as_view({'get': 'get_comment'}), name='post-comments'),
     path('posts/<uuid:pk>/images/', PostViewSet.as_view({'get': 'get_images'}), name='post-images'),
     path('themes/<uuid:pk>/reply_tree/', ThemeViewSet.as_view({'get': 'get_reply_tree'}), name='theme-reply-tree'),
+    path('messages/', PostViewSet.as_view({'get': 'get_messages'}), name='post-messages'),
 ]

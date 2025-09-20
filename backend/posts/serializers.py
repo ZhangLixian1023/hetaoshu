@@ -47,13 +47,23 @@ class ThemeReplyTreeSerializer(serializers.ModelSerializer):
 class ThemeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     post_count = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    post = serializers.SerializerMethodField()
     class Meta:
         model = Theme
-        fields = ('id', 'title', 'theme_type', 'description','valid_until','author', 'created_at', 'updated_at', 'post_count','first_post')
+        fields = ('id', 'title', 'theme_type', 'description','valid_until','author', 'created_at', 'updated_at', 'post_count','post','image')
         read_only_fields = ('id', 'author', 'created_at', 'updated_at', 'post_count')
     
     def get_post_count(self, obj):
         return obj.posts.count()
+    def get_post(self, obj):
+        if obj.first_post:
+            return PostCardSerializer(obj.first_post).data
+        return None
+    def get_image(self, obj):
+        if obj.first_post and obj.first_post.images.exists():
+            return PostImageSerializer(obj.first_post.images.first()).data
+        return None
     def create(self, validated_data):
         request = self.context.get('request')
         # 创建主题
@@ -76,7 +86,14 @@ class PostImageSerializer(serializers.ModelSerializer):
         model = PostImage
         fields = ('id', 'image', 'created_at', 'order')
         read_only_fields = ('id', 'created_at')
-
+class PostCardSerializer(serializers.ModelSerializer):
+    image_count = serializers.SerializerMethodField()
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'content', 'author', 'created_at', 'updated_at','image_count')
+        read_only_fields = fields
+    def get_image_count(self, obj):
+        return obj.images.count()
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     theme = ThemeSerializer(read_only=True)

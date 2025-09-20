@@ -34,6 +34,16 @@ class ThemeViewSet(viewsets.ModelViewSet):
         serializer = ThemeReplyTreeSerializer(theme)
         return Response(serializer.data)
 
+    def list(self, request):
+        """获取所有活跃帖子（重写父类的list方法）"""
+        themes = Theme.objects.filter(is_active=True).order_by('-created_at')
+        # 应用分页
+        paginator = PostPagination()
+        paginated_posts = paginator.paginate_queryset(themes, request)
+        serializer = ThemeSerializer(paginated_posts, many=True)
+        # 返回分页后的响应，包含results和next字段
+        return paginator.get_paginated_response(serializer.data)
+
 class PostImageViewSet(viewsets.ModelViewSet):
     queryset = PostImage.objects.all()
     serializer_class = PostImageSerializer
@@ -41,9 +51,9 @@ class PostImageViewSet(viewsets.ModelViewSet):
 
 # 自定义分页类
 class PostPagination(PageNumberPagination):
-    page_size = 20  # 每页显示20条
+    page_size = 24  # 每页显示20条
     page_size_query_param = 'page_size'
-    max_page_size = 50
+    max_page_size = 60
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.filter(is_active=True)
@@ -70,7 +80,53 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = PostSerializer(paginated_posts, many=True)
         # 返回分页后的响应，包含results和next字段
         return paginator.get_paginated_response(serializer.data)
-    
+    def get_messages(self, request):
+        """获取用户未读消息
+        筛选条件：post的parent的author是当前用户，且创建时间在last_visit之后
+        """
+        user = request.user
+        last_visit = request.GET.get('since')
+        
+        # 构建查询：筛选出满足条件的帖子
+        messages = Post.objects.filter(
+            parent__author=user,  # 父帖子的作者是当前用户
+            is_active=True        # 帖子是有效的
+        )
+        
+        # 如果提供了last_visit参数，则添加时间筛选条件
+        if last_visit:
+            try:
+                from django.utils import timezone
+                import datetime
+                # 将last_visit字符串转换为datetime对象
+                # 支持常见的ISO格式和日期字符串
+                if isinstance(last_visit, str):
+                    # 尝试多种常见的日期格式
+                    formats = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
+                    parsed_date = None
+                    for fmt in formats:
+                        try:
+                            parsed_date = datetime.datetime.strptime(last_visit, fmt)
+                            if fmt.endswith('Z'):
+                                # 处理带Z时区的时间格式
+                                from django.utils.timezone import make_aware
+                                parsed_date = make_aware(parsed_date)
+                            break
+                        except ValueError:
+                            continue
+                    
+                    if parsed_date:
+                        messages = messages.filter(created_at__gt=parsed_date)
+            except Exception:
+                # 如果日期解析失败，忽略该条件
+                pass
+        
+        # 按创建时间降序排列
+        messages = messages.order_by('-created_at')
+        
+        # 序列化结果
+        serializer = PostSerializer(messages, many=True)
+        return Response(serializer.data)
     def create(self, request):
         """创建新帖子的API入口"""
         # 使用序列化器验证和保存数据，将request对象传递给context

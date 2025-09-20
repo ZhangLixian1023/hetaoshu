@@ -17,7 +17,7 @@ const ThemeDetailPage = () => {
       const response = await axios.get(`/themes/${id}/`);
       setTheme(response.data);
 
-      const firstPost = response.data.first_post;
+      const firstPost = response.data.post.id;
       setPostId(firstPost);
     } catch (error) {
       console.error('Error fetching post:', error);
