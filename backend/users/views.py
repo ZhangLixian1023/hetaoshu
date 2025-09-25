@@ -10,7 +10,9 @@ from .models import User, VerificationCode
 from .serializers import UserSerializer, LoginSerializer, VerificationCodeSerializer,ChangePasswordSerializer
 from django.core.mail import send_mail
 from django.conf import settings
-
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -47,8 +49,7 @@ class SendVerificationCodeView(APIView):
             user = User.objects.get(student_id=student_id, email=email)
         except User.DoesNotExist:
             # 创建新用户，初始密码为None（未设置）
-            # 设置默认name为学号的后4位
-            default_name = student_id[-3:]
+            default_name = student_id
             user = User.objects.create_user(
                 student_id=student_id,
                 email=email,
@@ -59,14 +60,30 @@ class SendVerificationCodeView(APIView):
         # 生成验证码，明确设置expires_at的值
         verification_code = VerificationCode.objects.create(user=user, expires_at=timezone.now() + timedelta(minutes=60))
         
+        sender_email = settings.DEFAULT_FROM_EMAIL 
+        sender_password = settings.EMAIL_HOST_PASSWORD
+        smtp_server = settings.EMAIL_HOST
+        smtp_port = settings.EMAIL_PORT
+
         # 发送邮件
-        subject = '核桃书验证码'
-        message = f'正在通过核桃书发送验证码。你的验证码是: {verification_code.code}，60分钟内有效。'
-        from_email = settings.DEFAULT_FROM_EMAIL
-        recipient_list = [email]
-        
+        subject = 'hetaoshu verification code'
+        message = f'{verification_code.code}. Valid in 60 minutes.'
+
+
+        msg = MIMEText(message, 'plain')
+        msg['From'] = Header(sender_email)
+        msg['To'] = Header(email)  # 用分号分隔多个收件人
+        msg['Subject'] = Header(subject)
         try:
-            send_mail(subject, message, from_email, recipient_list)
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                # 启用TLS加密
+                server.starttls()
+                # 登录邮箱
+                server.login(sender_email, sender_password)
+                
+                # 发送邮件（将所有收件人作为列表传入）
+                server.sendmail(sender_email, email, msg.as_string())
+            
             return Response({
                 'message': '验证码已发送到你的邮箱',
                 'student_id': student_id

@@ -11,7 +11,7 @@ lerna-debug.log*
 # keys
 /keys/
 *.pem
-
+*.key
 # Runtime data
 pids
 *.pid

@@ -12,16 +12,10 @@ const SendCodePage = () => {
     e.preventDefault();
     
     if (!studentId.trim()) {
-      toast.error('请输入学号');
+      toast.error('请输入邮箱名');
       return;
     }
     
-    // 验证学号是否在有效范围内 (250010001-250010240)
-    const studentIdNum = parseInt(studentId, 10);
-    if (isNaN(studentIdNum) || studentIdNum < 250010001 || studentIdNum > 250010240) {
-      toast.error('请输入有效的SLAI学号（250010001-250010240）');
-      return;
-    }
 
     setLoading(true);
     try {
@@ -52,7 +46,8 @@ const SendCodePage = () => {
             核桃书 - 发送验证码
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            输入在SLAI的学号 将发送验证码到学号@SLAI邮箱
+            输入在SLAI的邮箱名（学生输入学号即可，不带@slai.edu.cn） 
+            将发送验证码到该邮箱
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -60,7 +55,7 @@ const SendCodePage = () => {
           <div className="rounded-md -space-y-px">
             <div>
               <label htmlFor="studentId" className="sr-only">
-                学号
+                邮箱名
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -72,7 +67,7 @@ const SendCodePage = () => {
                   type="text"
                   required
                   className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md"
-                  placeholder="输入您的SLAI学号"
+                  placeholder="SLAI邮箱名（学生输学号，不带@slai.edu.cn）"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
                 />

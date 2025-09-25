@@ -62,7 +62,7 @@ const LoginPage = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="h-dvh flex flex-col items-center justify-center bg-gray-100 py-2 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center">
@@ -180,6 +180,13 @@ const LoginPage = ({ onLogin }) => {
 
 
         </div>
+      </div>
+      
+      {/* 备案号链接 */}
+      <div className="mt-8 py-2 border-gray-200 flex justify-center items-center text-sm text-gray-500">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+          豫ICP备2024090343号-2
+        </a>
       </div>
     </div>
   );

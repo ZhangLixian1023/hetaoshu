@@ -52,12 +52,13 @@ const Header = ({ user }) => {
               <div className="flex items-center space-x-4">
                 <div className=" md:flex items-center space-x-2">
                   <Link to="/profile" className="text-gray-700 hover:text-blue-600 font-medium">
-                    <span className="text-gray-700">{displayName}</span>
+                    <i className="fa fa-user text-m"></i> 
+                    <span className="text-gray-700"> {displayName}</span>
                   </Link>
                   { (
                     <Link to="/messages" state={{messages:messages}} className="text-gray-700 hover:text-blue-600 font-medium">
-                      <i className="fa fa-envelope text-m"></i>
-                      <span className="ml-1 text-m text-red-500">({unreadCount})</span>
+                      <i className="fa fa-envelope text-md"></i>
+                      <span className="ml-1 text-md text-red-500">({unreadCount})</span>
                     </Link>
                   )}
                 </div>

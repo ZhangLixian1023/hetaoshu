@@ -3,11 +3,13 @@ services:
     image: mysql:8.0
     volumes:
       - mysql_data:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     env_file:
       - ./.env
     environment:
       - MYSQL_DATABASE=hetaoshu
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_INITDB_ARGS=--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
       - "3306:3306"
     healthcheck:
@@ -43,8 +45,10 @@ services:
     image: nginx:1.21
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl  # 本地证书目录挂载到容器内
       - static_volume:/home/app/staticfiles
       - media_volume:/home/app/media
       - ./frontend/build:/usr/share/nginx/html  # 挂载前端构建文件

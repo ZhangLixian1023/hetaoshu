@@ -28,10 +28,10 @@ const PostCard = ({ theme}) => {
       )}
       
       {/* 帖子信息 - 保留内边距 */}
-      <div className={`p-4 bg-white`}>
-        <h3 className="font-semibold text-gray-800 line-clamp-2">{theme.title}</h3>
+      <div className={`p-3 bg-white`}>
+        <h3 className="font-semibold text-gray-800 h-12 overflow-hidden">{theme.title}</h3>
         
-        <div className="flex justify-between items-center mt-3">
+        <div className="flex justify-between items-center mt-1">
           <span className="text-xs text-gray-500">
             {theme.author.name || theme.author.student_id}
           </span>
@@ -42,7 +42,7 @@ const PostCard = ({ theme}) => {
         
         {/* 评论数量 */}
         {theme.post_count > 1 && (
-          <div className="mt-2 text-xs text-gray-500 flex items-center">
+          <div className="mt-1 text-xs text-gray-500 flex items-center">
             <i className="fa fa-comment-o mr-1"></i>
             {theme.post_count-1} 
           </div>
