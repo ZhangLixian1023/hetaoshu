@@ -38,10 +38,14 @@ const Header = ({ user }) => {
       <div className="container mx-auto max-w-[1200px] px-4">
         <div className="flex justify-between items-center h-16">
           {/* 左侧区域 */}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-6">
             <Link to="/" className="text-blue-600">
               <i className="fa fa-search text-xl"></i>
               <span className="ml-1 text-sm text-gray-500">搜索功能待开发</span>
+            </Link>
+            <Link to="/files" className="text-blue-600">
+              <i className="fa fa-file-text text-xl"></i>
+              <span className="ml-1 text-sm text-gray-500">文件服务</span>
             </Link>
           </div>
           

@@ -24,6 +24,9 @@ import ProfilePage from './pages/ProfilePage';
 // 消息组件
 import MessagePage from './components/posts/MessagePage';
 
+// 文件服务组件
+import FileServicePage from './pages/FileServicePage';
+
 // 配置axios - 使用环境变量
 const API_URL = process.env.REACT_APP_API_URL;
 const ENV = process.env.REACT_APP_ENV;
@@ -143,6 +146,11 @@ function App() {
             } />
             
             {/* 私有路由 */}
+            <Route path="/files" element={
+              <PrivateRoute>
+                <FileServicePage user={user} handleLogout={handleLogout} />
+              </PrivateRoute>
+            } />
             <Route path="/posts/create" element={
               <PrivateRoute>
                 <CreatePostPage />
